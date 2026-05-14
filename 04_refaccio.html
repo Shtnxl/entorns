@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>04 · Refacció — Repàs PAF M0487</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header>
+  <h1>04 · Refacció</h1>
+  <a class="back" href="index.html">← Índex</a>
+</header>
+
+<div class="tabs">
+  <button class="tab" onclick="showTab('que', this)">Què és</button>
+  <button class="tab" onclick="showTab('tecniques', this)">Tècniques</button>
+  <button class="tab" onclick="showTab('exemple', this)">Exemple complet</button>
+  <button class="tab" onclick="showTab('javadoc', this)">Javadoc</button>
+  <button class="tab" onclick="showTab('errors', this)">Errors típics</button>
+  <button class="tab" onclick="showTab('quiz', this)">Quiz</button>
+</div>
+
+<!-- =================== QUÈ ÉS =================== -->
+<section id="que" class="section">
+  <div class="hero">
+    <h2>Refacció (refactoring)</h2>
+    <p class="lead">Modificar l'<strong>estructura interna</strong> del codi <strong>sense canviar-ne el comportament extern</strong>. L'objectiu és fer el codi més llegible, més curt, més mantenible.</p>
+  </div>
+
+  <div class="card good">
+    <div class="card-title">✓ Què SÍ és refacció</div>
+    <ul>
+      <li>Extreure un fragment repetit a un mètode nou</li>
+      <li>Donar noms millors a variables i mètodes</li>
+      <li>Substituir un número màgic per una constant amb nom</li>
+      <li>Eliminar codi duplicat</li>
+      <li>Reorganitzar mètodes entre classes</li>
+    </ul>
+  </div>
+
+  <div class="card bad">
+    <div class="card-title">✗ Què NO és refacció</div>
+    <ul>
+      <li>Afegir noves funcionalitats</li>
+      <li>Corregir bugs (això és correcció, no refacció)</li>
+      <li>Optimitzar rendiment canviant l'algorisme</li>
+      <li>Reescriure des de zero</li>
+    </ul>
+  </div>
+
+  <div class="card warn">
+    <div class="card-title">⚠️ Regla d'or</div>
+    <p>Si abans i després de refactoritzar passes els mateixos tests amb el mateix resultat, ho has fet bé. Si algun test canvia, és que has alterat el comportament — això ja no és refacció.</p>
+  </div>
+</section>
+
+<!-- =================== TÈCNIQUES =================== -->
+<section id="tecniques" class="section">
+  <h2>Tècniques de refacció (les que cauen a la PAF)</h2>
+
+  <div class="card info">
+    <div class="card-title">1️⃣ Extreure mètode</div>
+    <p>Quan veus un bloc de codi que <strong>fa una cosa concreta</strong>, mou-lo a un mètode separat.</p>
+    <p><strong>Abans:</strong></p>
+    <pre><code><span class="kw">if</span> (tipus.<span class="fn">equals</span>(<span class="str">"MONO"</span>)) {
+    base = hores * <span class="num">250</span>;
+    <span class="kw">if</span> (hores &gt; <span class="num">7</span>) base += <span class="num">50</span>;
+    <span class="kw">if</span> (temp &gt; <span class="num">25</span>) base -= base * <span class="num">0.05</span>;
+    <span class="kw">return</span> base;
+}</code></pre>
+    <p><strong>Després:</strong></p>
+    <pre><code><span class="kw">if</span> (tipus.<span class="fn">equals</span>(<span class="str">"MONO"</span>)) {
+    <span class="kw">return</span> <span class="fn">calcularMono</span>(hores, temp);
+}
+
+<span class="kw">private double</span> <span class="fn">calcularMono</span>(<span class="kw">double</span> hores, <span class="kw">int</span> temp) {
+    <span class="kw">double</span> base = hores * <span class="num">250</span>;
+    <span class="kw">if</span> (hores &gt; <span class="num">7</span>) base += <span class="num">50</span>;
+    <span class="kw">if</span> (temp &gt; <span class="num">25</span>) base -= base * <span class="num">0.05</span>;
+    <span class="kw">return</span> base;
+}</code></pre>
+  </div>
+
+  <div class="card info">
+    <div class="card-title">2️⃣ Extreure constant</div>
+    <p>Els <strong>"números màgics"</strong> (250, 0.05, 25...) no diuen res. Substitueix-los per constants amb nom.</p>
+    <pre><code><span class="kw">private static final double</span> POTENCIA_MONO = <span class="num">250</span>;
+<span class="kw">private static final double</span> PERDUA_CALOR_MONO = <span class="num">0.05</span>;
+<span class="kw">private static final int</span> TEMP_LIMIT = <span class="num">25</span>;
+<span class="kw">private static final int</span> HORES_BONUS = <span class="num">7</span>;
+<span class="kw">private static final double</span> BONUS_MONO = <span class="num">50</span>;</code></pre>
+    <p><strong>Avantatge:</strong> si canvies <code>TEMP_LIMIT</code> a 30, només toques un lloc.</p>
+  </div>
+
+  <div class="card info">
+    <div class="card-title">3️⃣ Reanomenar (rename)</div>
+    <p>Donar noms descriptius. <code>x</code>, <code>aux</code>, <code>temp1</code> → <code>preuFinalAmbDescompte</code>, <code>nombreDeIntentos</code>, etc.</p>
+    <p><strong>L'IDE ho fa automàticament:</strong> botó dret → Refactor → Rename. Canvia totes les referències d'una sola vegada.</p>
+  </div>
+
+  <div class="card info">
+    <div class="card-title">4️⃣ Moure mètode/atribut</div>
+    <p>Si un mètode usa més els atributs d'una altra classe que els de la seva pròpia, és senyal que viu a la classe equivocada.</p>
+  </div>
+
+  <div class="card info">
+    <div class="card-title">5️⃣ Extreure variable</div>
+    <p>Per a expressions complicades, extreu el resultat a una variable amb nom descriptiu.</p>
+    <pre><code><span class="com">// Abans</span>
+<span class="kw">if</span> ((preuBase * <span class="num">1.21</span>) - descompte &gt; <span class="num">1000</span>) ...
+
+<span class="com">// Després</span>
+<span class="kw">double</span> totalAmbIVA = preuBase * IVA_FACTOR;
+<span class="kw">double</span> totalFinal = totalAmbIVA - descompte;
+<span class="kw">if</span> (totalFinal &gt; LIMIT_VIP) ...</code></pre>
+  </div>
+
+  <div class="card info">
+    <div class="card-title">6️⃣ Eliminar duplicació amb herència/polimorfisme</div>
+    <p>Si tens tres branques que fan gairebé el mateix amb petits canvis, considera crear una classe pare amb el patró comú i classes filles per a les diferències.</p>
+  </div>
+
+  <h3>Patrons d'olor (code smells) que indiquen refacció</h3>
+  <table>
+    <tr><th>Olor</th><th>Què és</th><th>Tècnica a aplicar</th></tr>
+    <tr><td>Codi duplicat</td><td>El mateix fragment apareix en més d'un lloc</td><td>Extreure mètode</td></tr>
+    <tr><td>Mètode llarg</td><td>50+ línies, fa massa coses</td><td>Extreure mètode (diverses vegades)</td></tr>
+    <tr><td>Número màgic</td><td>Constants numèriques sense explicació</td><td>Extreure constant</td></tr>
+    <tr><td>Nom poc clar</td><td><code>x</code>, <code>temp</code>, <code>do_stuff()</code></td><td>Reanomenar</td></tr>
+    <tr><td>Classe gran</td><td>Massa atributs i mètodes</td><td>Extreure classe</td></tr>
+    <tr><td>Mètode al lloc equivocat</td><td>Usa més una altra classe que la seva</td><td>Moure mètode</td></tr>
+  </table>
+</section>
+
+<!-- =================== EXEMPLE =================== -->
+<section id="exemple" class="section">
+  <h2>Exemple complet — basat en l'EAC3</h2>
+  <p>Imagina un sistema que calcula la producció d'un panell solar segons tipus (MONO, POLY, FILM), hores de sol i temperatura.</p>
+
+  <h3>Codi original (sense refactoritzar)</h3>
+  <pre><code><span class="kw">public class</span> <span class="typ">GestorEnergia</span> {
+
+    <span class="kw">public static double</span> <span class="fn">calcularProduccio</span>(<span class="typ">String</span> tipus, <span class="kw">double</span> hores, <span class="kw">int</span> temp) {
+        <span class="kw">double</span> base = <span class="num">0</span>;
+        <span class="kw">double</span> rendiment = <span class="num">0</span>;
+
+        <span class="kw">if</span> (tipus.<span class="fn">equals</span>(<span class="str">"MONO"</span>)) {
+            base = hores * <span class="num">250</span>;
+            <span class="kw">if</span> (hores &gt; <span class="num">7</span>) base += <span class="num">50</span>;
+            <span class="kw">if</span> (temp &gt; <span class="num">25</span>) rendiment = base - (base * <span class="num">0.05</span>);
+            <span class="kw">else</span> rendiment = base;
+            <span class="typ">System</span>.out.<span class="fn">println</span>(<span class="str">"Mono: "</span> + rendiment);
+            <span class="kw">return</span> rendiment;
+        } <span class="kw">else if</span> (tipus.<span class="fn">equals</span>(<span class="str">"POLY"</span>)) {
+            base = hores * <span class="num">200</span>;
+            <span class="kw">if</span> (hores &gt; <span class="num">7</span>) base += <span class="num">30</span>;
+            <span class="kw">if</span> (temp &gt; <span class="num">25</span>) rendiment = base - (base * <span class="num">0.08</span>);
+            <span class="kw">else</span> rendiment = base;
+            <span class="typ">System</span>.out.<span class="fn">println</span>(<span class="str">"Poly: "</span> + rendiment);
+            <span class="kw">return</span> rendiment;
+        } <span class="kw">else if</span> (tipus.<span class="fn">equals</span>(<span class="str">"FILM"</span>)) {
+            base = hores * <span class="num">150</span>;
+            <span class="kw">if</span> (temp &gt; <span class="num">25</span>) rendiment = base - (base * <span class="num">0.02</span>);
+            <span class="kw">else</span> rendiment = base;
+            <span class="typ">System</span>.out.<span class="fn">println</span>(<span class="str">"Film: "</span> + rendiment);
+            <span class="kw">return</span> rendiment;
+        } <span class="kw">else</span> {
+            <span class="typ">System</span>.out.<span class="fn">println</span>(<span class="str">"Error"</span>);
+            <span class="kw">return</span> -<span class="num">1</span>;
+        }
+    }
+}</code></pre>
+
+  <h3>Olors detectades</h3>
+  <ol>
+    <li><strong>Codi duplicat:</strong> el patró "calcular base + bonus + pèrdua per calor + log" es repeteix 3 vegades.</li>
+    <li><strong>Números màgics:</strong> 250, 200, 150, 50, 30, 7, 25, 0.05, 0.08, 0.02. Cap diu què és.</li>
+    <li><strong>Mètode llarg:</strong> 25+ línies, branques complexes.</li>
+    <li><strong>Strings literals com a identificadors:</strong> "MONO", "POLY", "FILM" repartits per tot.</li>
+    <li><strong>Retorn de -1 com a error:</strong> antipatron, millor llançar excepció.</li>
+  </ol>
+
+  <h3>Codi refactoritzat</h3>
+  <pre><code><span class="kw">public class</span> <span class="typ">GestorEnergia</span> {
+
+    <span class="com">// === REFACCIÓ 1: extreure constants (eliminar números màgics) ===</span>
+    <span class="kw">private static final double</span> POT_MONO = <span class="num">250</span>;
+    <span class="kw">private static final double</span> POT_POLY = <span class="num">200</span>;
+    <span class="kw">private static final double</span> POT_FILM = <span class="num">150</span>;
+    <span class="kw">private static final double</span> BONUS_MONO = <span class="num">50</span>;
+    <span class="kw">private static final double</span> BONUS_POLY = <span class="num">30</span>;
+    <span class="kw">private static final double</span> PERDUA_MONO = <span class="num">0.05</span>;
+    <span class="kw">private static final double</span> PERDUA_POLY = <span class="num">0.08</span>;
+    <span class="kw">private static final double</span> PERDUA_FILM = <span class="num">0.02</span>;
+    <span class="kw">private static final int</span> HORES_LIMIT_BONUS = <span class="num">7</span>;
+    <span class="kw">private static final int</span> TEMP_LIMIT_PERDUA = <span class="num">25</span>;
+
+    <span class="kw">public static double</span> <span class="fn">calcularProduccio</span>(<span class="typ">String</span> tipus, <span class="kw">double</span> hores, <span class="kw">int</span> temp) {
+        <span class="kw">switch</span> (tipus) {
+            <span class="kw">case</span> <span class="str">"MONO"</span>:
+                <span class="kw">return</span> <span class="fn">calcular</span>(hores, temp, POT_MONO, BONUS_MONO, PERDUA_MONO, <span class="str">"Monocristal·lí"</span>);
+            <span class="kw">case</span> <span class="str">"POLY"</span>:
+                <span class="kw">return</span> <span class="fn">calcular</span>(hores, temp, POT_POLY, BONUS_POLY, PERDUA_POLY, <span class="str">"Policristal·lí"</span>);
+            <span class="kw">case</span> <span class="str">"FILM"</span>:
+                <span class="kw">return</span> <span class="fn">calcular</span>(hores, temp, POT_FILM, <span class="num">0</span>, PERDUA_FILM, <span class="str">"Capa Fina"</span>);
+            <span class="kw">default</span>:
+                <span class="typ">System</span>.out.<span class="fn">println</span>(<span class="str">"Error: tipus desconegut"</span>);
+                <span class="kw">return</span> -<span class="num">1</span>;
+        }
+    }
+
+    <span class="com">// === REFACCIÓ 2: extreure mètode (eliminar duplicació) ===</span>
+    <span class="kw">private static double</span> <span class="fn">calcular</span>(<span class="kw">double</span> hores, <span class="kw">int</span> temp,
+                                     <span class="kw">double</span> potencia, <span class="kw">double</span> bonus,
+                                     <span class="kw">double</span> perdua, <span class="typ">String</span> nom) {
+        <span class="kw">double</span> base = hores * potencia;
+        <span class="kw">if</span> (hores &gt; HORES_LIMIT_BONUS) base += bonus;
+        <span class="kw">double</span> rendiment = (temp &gt; TEMP_LIMIT_PERDUA) ? base - (base * perdua) : base;
+        <span class="typ">System</span>.out.<span class="fn">println</span>(nom + <span class="str">": "</span> + rendiment + <span class="str">" watts"</span>);
+        <span class="kw">return</span> rendiment;
+    }
+}</code></pre>
+
+  <div class="card good">
+    <div class="card-title">Tècniques aplicades (mínim 2 que es demanen a l'EAC3)</div>
+    <ol>
+      <li><strong>Extreure constants:</strong> tots els números màgics tenen nom ara.</li>
+      <li><strong>Extreure mètode:</strong> el patró comú de càlcul ara és <code>calcular()</code>, cridat 3 vegades.</li>
+      <li><strong>Bonus:</strong> substitució de <code>if-else-if</code> per <code>switch</code> (més llegible).</li>
+      <li><strong>Bonus:</strong> operador ternari <code>?:</code> on hi havia un if/else trivial.</li>
+    </ol>
+    <p>El comportament és <strong>idèntic</strong> al codi original: per cada tipus, els valors numèrics finals són els mateixos.</p>
+  </div>
+</section>
+
+<!-- =================== JAVADOC =================== -->
+<section id="javadoc" class="section">
+  <h2>Generar Javadoc</h2>
+  <p>Documenta la classe perquè es pugui generar HTML automàticament.</p>
+
+  <h3>Sintaxi Javadoc</h3>
+  <pre><code><span class="com">/**
+ * Calcula la producció d'energia d'un panell solar
+ * segons el seu tipus, hores de sol i temperatura.
+ * 
+ * @author El Rahali
+ * @version 1.0
+ */</span>
+<span class="kw">public class</span> <span class="typ">GestorEnergia</span> {
+
+    <span class="com">/**
+     * Calcula la producció total en watts.
+     * 
+     * @param tipus  El tipus de panell ("MONO", "POLY" o "FILM")
+     * @param hores  Hores de sol al dia
+     * @param temp   Temperatura ambient en graus Celsius
+     * @return       Watts generats, o -1 si el tipus no és vàlid
+     */</span>
+    <span class="kw">public static double</span> <span class="fn">calcularProduccio</span>(<span class="typ">String</span> tipus, <span class="kw">double</span> hores, <span class="kw">int</span> temp) {
+        ...
+    }
+}</code></pre>
+
+  <h3>Etiquetes Javadoc més habituals</h3>
+  <table>
+    <tr><th>Etiqueta</th><th>Què documenta</th></tr>
+    <tr><td><code>@author</code></td><td>L'autor de la classe</td></tr>
+    <tr><td><code>@version</code></td><td>Versió del codi</td></tr>
+    <tr><td><code>@param</code></td><td>Cadascun dels paràmetres d'un mètode</td></tr>
+    <tr><td><code>@return</code></td><td>Què retorna el mètode</td></tr>
+    <tr><td><code>@throws</code> / <code>@exception</code></td><td>Excepcions que llança</td></tr>
+    <tr><td><code>@see</code></td><td>Referència a una altra classe/mètode</td></tr>
+    <tr><td><code>@deprecated</code></td><td>Indica que el mètode no s'ha d'usar més</td></tr>
+  </table>
+
+  <div class="card info">
+    <div class="card-title">A Eclipse</div>
+    <p>Menú <strong>Project → Generate Javadoc</strong>. Si demana on és <code>javadoc.exe</code>, va a la carpeta <code>bin</code> del JDK.</p>
+  </div>
+
+  <div class="card warn">
+    <div class="card-title">⚠️ Diferència crítica</div>
+    <p>Comentaris normals: <code>// ...</code> o <code>/* ... */</code> — només per a humans que llegeixin el codi.</p>
+    <p>Comentaris Javadoc: <code>/** ... */</code> (amb <strong>doble asterisc</strong>) — l'eina javadoc els processa per generar HTML.</p>
+  </div>
+</section>
+
+<!-- =================== ERRORS =================== -->
+<section id="errors" class="section">
+  <h2>Errors típics a la refacció</h2>
+
+  <div class="card bad">
+    <div class="card-title">❌ Canviar el comportament accidentalment</div>
+    <p>Refactoritzes i el codi ja no fa el mateix. <strong>Sempre executa els tests abans i després</strong> per assegurar-te que el resultat és idèntic.</p>
+  </div>
+
+  <div class="card bad">
+    <div class="card-title">❌ Sobre-refactoritzar (over-engineering)</div>
+    <p>Crear 5 nivells d'herència per un sistema senzill. La refacció ha de simplificar, no complicar. Si el codi original és curt i clar, potser no cal refactoritzar.</p>
+  </div>
+
+  <div class="card bad">
+    <div class="card-title">❌ Refactoritzar i afegir features alhora</div>
+    <p>Si fas les dues coses al mateix commit, quan algun test trenqui no sabràs si és per la refacció o per la nova funcionalitat. <strong>Separa</strong> els canvis.</p>
+  </div>
+
+  <div class="card warn">
+    <div class="card-title">⚠️ A la PAF (escrivint a paper)</div>
+    <p>No t'has de saber les ordres exactes d'Eclipse (Right-click → Refactor → ...). N'hi ha prou amb:</p>
+    <ul>
+      <li>Identificar les olors al codi original</li>
+      <li>Saber el nom de la tècnica que aplicaries</li>
+      <li>Escriure el codi resultant (encara que sigui simplificat)</li>
+      <li>Comentar al costat quina tècnica has aplicat: <code>// extracció de mètode</code></li>
+    </ul>
+  </div>
+
+  <div class="card info">
+    <div class="card-title">💡 Truc PAF</div>
+    <p>L'enunciat sol demanar "<strong>com a mínim dues tècniques</strong>". Les més segures per aplicar i fàcils d'explicar són:</p>
+    <ol>
+      <li><strong>Extreure constants</strong> (números màgics)</li>
+      <li><strong>Extreure mètode</strong> (codi duplicat)</li>
+    </ol>
+    <p>Aquestes dues quasi sempre apliquen a qualsevol codi raonablement complex.</p>
+  </div>
+</section>
+
+<!-- =================== QUIZ =================== -->
+<section id="quiz" class="section">
+  <h2>Quiz — Refacció (10 preguntes)</h2>
+
+  <div class="quiz">
+
+    <div class="q">
+      <div class="q-text">1. Refacció (refactoring) significa:</div>
+      <div class="opts">
+        <button class="opt" data-opt="a" onclick="answer(this,'b','r1')">a) Afegir noves funcionalitats al programari</button>
+        <button class="opt" data-opt="b" onclick="answer(this,'b','r1')">b) Canviar l'estructura interna sense alterar el comportament extern</button>
+        <button class="opt" data-opt="c" onclick="answer(this,'b','r1')">c) Corregir errors de compilació</button>
+        <button class="opt" data-opt="d" onclick="answer(this,'b','r1')">d) Documentar el codi amb Javadoc</button>
+      </div>
+      <div class="explain" id="exp_r1">Refacció = millorar l'estructura sense canviar el que fa. Si afegeixes funcionalitats o corregeixes bugs, ja no és refacció pura.</div>
+    </div>
+
+    <div class="q">
+      <div class="q-text">2. Quin patró s'usa per convertir un fragment de codi en un mètode independent?</div>
+      <div class="opts">
+        <button class="opt" data-opt="a" onclick="answer(this,'d','r2')">a) Reanomenar</button>
+        <button class="opt" data-opt="b" onclick="answer(this,'d','r2')">b) Moure</button>
+        <button class="opt" data-opt="c" onclick="answer(this,'d','r2')">c) Extreure una constant</button>
+        <button class="opt" data-opt="d" onclick="answer(this,'d','r2')">d) Extreure el mètode</button>
+      </div>
+      <div class="explain" id="exp_r2">Extract Method: agafes un bloc de codi i el converteixes en un mètode amb nom propi.</div>
+    </div>
+
+    <div class="q">
+      <div class="q-text">3. Un "número màgic" es resol amb:</div>
+      <div class="opts">
+        <button class="opt" data-opt="a" onclick="answer(this,'c','r3')">a) Extreure mètode</button>
+        <button class="opt" data-opt="b" onclick="answer(this,'c','r3')">b) Moure classe</button>
+        <button class="opt" data-opt="c" onclick="answer(this,'c','r3')">c) Extreure constant</button>
+        <button class="opt" data-opt="d" onclick="answer(this,'c','r3')">d) Eliminar el número</button>
+      </div>
+      <div class="explain" id="exp_r3">Substitueix el literal pel nom d'una constant: <code>private static final double IVA = 0.21;</code></div>
+    </div>
+
+    <div class="q">
+      <div class="q-text">4. Quin d'aquests NO és un code smell?</div>
+      <div class="opts">
+        <button class="opt" data-opt="a" onclick="answer(this,'d','r4')">a) Codi duplicat</button>
+        <button class="opt" data-opt="b" onclick="answer(this,'d','r4')">b) Mètode de 80 línies</button>
+        <button class="opt" data-opt="c" onclick="answer(this,'d','r4')">c) Variables anomenades <code>x</code>, <code>aux</code></button>
+        <button class="opt" data-opt="d" onclick="answer(this,'d','r4')">d) Ús d'una classe amb 3-4 atributs</button>
+      </div>
+      <div class="explain" id="exp_r4">Una classe amb pocs atributs és perfectament normal. Les altres opcions són olors clàssiques que indiquen necessitat de refacció.</div>
+    </div>
+
+    <div class="q">
+      <div class="q-text">5. Per saber si la refacció no ha trencat res, l'eina més útil és:</div>
+      <div class="opts">
+        <button class="opt" data-opt="a" onclick="answer(this,'c','r5')">a) Una revisió manual del codi</button>
+        <button class="opt" data-opt="b" onclick="answer(this,'c','r5')">b) Documentar amb Javadoc</button>
+        <button class="opt" data-opt="c" onclick="answer(this,'c','r5')">c) Una bateria de tests automàtics (JUnit)</button>
+        <button class="opt" data-opt="d" onclick="answer(this,'c','r5')">d) Compilar el codi</button>
+      </div>
+      <div class="explain" id="exp_r5">Si abans i després els tests passen amb els mateixos resultats, la refacció és correcta. Compilar només garanteix que el codi és sintàcticament vàlid.</div>
+    </div>
+
+    <div class="q">
+      <div class="q-text">6. Un comentari Javadoc comença amb:</div>
+      <div class="opts">
+        <button class="opt" data-opt="a" onclick="answer(this,'b','r6')">a) <code>// ...</code></button>
+        <button class="opt" data-opt="b" onclick="answer(this,'b','r6')">b) <code>/** ... */</code></button>
+        <button class="opt" data-opt="c" onclick="answer(this,'b','r6')">c) <code>/* ... */</code></button>
+        <button class="opt" data-opt="d" onclick="answer(this,'b','r6')">d) <code>### ... ###</code></button>
+      </div>
+      <div class="explain" id="exp_r6">El doble asterisc inicial (<code>/**</code>) és el que els distingeix de comentaris normals i fa que l'eina javadoc els processi.</div>
+    </div>
+
+    <div class="q">
+      <div class="q-text">7. L'etiqueta Javadoc per documentar un paràmetre és:</div>
+      <div class="opts">
+        <button class="opt" data-opt="a" onclick="answer(this,'b','r7')">a) <code>@arg</code></button>
+        <button class="opt" data-opt="b" onclick="answer(this,'b','r7')">b) <code>@param</code></button>
+        <button class="opt" data-opt="c" onclick="answer(this,'b','r7')">c) <code>@input</code></button>
+        <button class="opt" data-opt="d" onclick="answer(this,'b','r7')">d) <code>@var</code></button>
+      </div>
+      <div class="explain" id="exp_r7">Format estàndard: <code>@param nomVariable Descripció</code>.</div>
+    </div>
+
+    <div class="q">
+      <div class="q-text">8. Què NO és correcte fer durant una sessió de refacció?</div>
+      <div class="opts">
+        <button class="opt" data-opt="a" onclick="answer(this,'c','r8')">a) Extreure mètodes per reduir duplicació</button>
+        <button class="opt" data-opt="b" onclick="answer(this,'c','r8')">b) Reanomenar variables poc descriptives</button>
+        <button class="opt" data-opt="c" onclick="answer(this,'c','r8')">c) Afegir una nova funcionalitat aprofitant el canvi</button>
+        <button class="opt" data-opt="d" onclick="answer(this,'c','r8')">d) Substituir números màgics per constants</button>
+      </div>
+      <div class="explain" id="exp_r8">Refacció i afegir features han d'anar en commits separats. Si barreges, no podràs identificar quin canvi ha trencat un test.</div>
+    </div>
+
+    <div class="q">
+      <div class="q-text">9. Tenim aquest codi: <code>if (preu > 1000) descompte = preu * 0.1;</code> El número màgic és:</div>
+      <div class="opts">
+        <button class="opt" data-opt="a" onclick="answer(this,'d','r9')">a) Només <code>1000</code></button>
+        <button class="opt" data-opt="b" onclick="answer(this,'d','r9')">b) Només <code>0.1</code></button>
+        <button class="opt" data-opt="c" onclick="answer(this,'d','r9')">c) Cap</button>
+        <button class="opt" data-opt="d" onclick="answer(this,'d','r9')">d) Tots dos: <code>1000</code> i <code>0.1</code></button>
+      </div>
+      <div class="explain" id="exp_r9">Tots dos haurien de ser constants: <code>LIMIT_DESCOMPTE_VIP</code> i <code>PERCENTATGE_DESCOMPTE</code>.</div>
+    </div>
+
+    <div class="q">
+      <div class="q-text">10. Si demanes a un assistent d'IA suggeriments de refacció i et proposa 5 canvis, com hauries d'actuar?</div>
+      <div class="opts">
+        <button class="opt" data-opt="a" onclick="answer(this,'c','r10')">a) Acceptar-los tots automàticament</button>
+        <button class="opt" data-opt="b" onclick="answer(this,'c','r10')">b) Rebutjar-los tots, només la teva intuïció és vàlida</button>
+        <button class="opt" data-opt="c" onclick="answer(this,'c','r10')">c) Avaluar cada suggeriment: acceptar els que aporten claredat, descartar els que compliquen sense motiu</button>
+        <button class="opt" data-opt="d" onclick="answer(this,'c','r10')">d) Aplicar només el primer</button>
+      </div>
+      <div class="explain" id="exp_r10">L'EAC3 demana exactament això: "anàlisi crítica" — quins acceptes i quins descartes, i per què. La IA pot suggerir patrons innecessaris per a codi simple.</div>
+    </div>
+
+  </div>
+</section>
+
+<div id="tracker" class="tracker"></div>
+<script src="shared.js"></script>
+</body>
+</html>

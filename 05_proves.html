@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>05 · Proves de programari — Repàs PAF M0487</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header>
+  <h1>05 · Proves de programari</h1>
+  <a class="back" href="index.html">← Índex</a>
+</header>
+
+<div class="tabs">
+  <button class="tab" onclick="showTab('intro', this)">Visió general</button>
+  <button class="tab" onclick="showTab('caixes', this)">Caixa negra vs blanca</button>
+  <button class="tab" onclick="showTab('equiv', this)">Classes d'equivalència</button>
+  <button class="tab" onclick="showTab('limit', this)">Valors límit</button>
+  <button class="tab" onclick="showTab('ciclo', this)">Complexitat ciclomàtica</button>
+  <button class="tab" onclick="showTab('camins', this)">Camins independents</button>
+  <button class="tab" onclick="showTab('exemple', this)">Exemple complet</button>
+  <button class="tab" onclick="showTab('quiz', this)">Quiz</button>
+</div>
+
+<!-- =================== INTRO =================== -->
+<section id="intro" class="section">
+  <div class="hero">
+    <h2>Proves: per què i com</h2>
+    <p class="lead">Provar és demostrar que el codi <strong>fa el que ha de fer</strong> i que <strong>no fa el que NO ha de fer</strong>. No pots provar-ho tot, però amb tècniques sistemàtiques pots cobrir el que importa amb poques proves.</p>
+  </div>
+
+  <h3>Tipus de proves segons abast</h3>
+  <table>
+    <tr><th>Nivell</th><th>Què prova</th><th>Eina típica</th></tr>
+    <tr><td><strong>Unitàries</strong></td><td>Un mètode o classe aïllada</td><td>JUnit</td></tr>
+    <tr><td><strong>Integració</strong></td><td>Diversos mòduls treballant junts</td><td>JUnit + Mockito</td></tr>
+    <tr><td><strong>Sistema</strong></td><td>Tota l'aplicació</td><td>Selenium, Postman</td></tr>
+    <tr><td><strong>Acceptació</strong></td><td>L'usuari final valida</td><td>Manual</td></tr>
+  </table>
+
+  <div class="card info">
+    <div class="card-title">A la PAF</div>
+    <p>El nivell que cau és <strong>proves unitàries</strong>: classes d'equivalència, valors límit, complexitat ciclomàtica i camins independents.</p>
+  </div>
+</section>
+
+<!-- =================== CAIXES =================== -->
+<section id="caixes" class="section">
+  <h2>Caixa negra vs caixa blanca</h2>
+
+  <table>
+    <tr><th></th><th>Caixa negra</th><th>Caixa blanca</th></tr>
+    <tr><td>Coneixes el codi intern?</td><td>NO, només l'especificació</td><td>SÍ, mires el codi</td></tr>
+    <tr><td>Què mires</td><td>Entrades → sortides</td><td>Estructura interna, branques</td></tr>
+    <tr><td>Tècniques</td><td>Classes d'equivalència, valors límit</td><td>Complexitat ciclomàtica, camins independents</td></tr>
+    <tr><td>Quan</td><td>QA, proves d'acceptació</td><td>Desenvolupador, proves unitàries</td></tr>
+  </table>
+
+  <div class="card good">
+    <div class="card-title">💡 Truc per recordar</div>
+    <p><strong>Negra</strong> = no veus l'interior, només l'exterior (entrades/sortides). <strong>Blanca</strong> = és transparent, veus tot el codi.</p>
+  </div>
+
+  <div class="card warn">
+    <div class="card-title">⚠️ A la PAF</div>
+    <p>Si la pregunta diu "<em>donada aquesta especificació</em>" → caixa negra (equivalència, límits).</p>
+    <p>Si la pregunta diu "<em>donat aquest codi</em>" → caixa blanca (complexitat, camins).</p>
+  </div>
+</section>
+
+<!-- =================== EQUIVALÈNCIA =================== -->
+<section id="equiv" class="section">
+  <h2>Classes d'equivalència</h2>
+  <p>Idea: si dos valors fan que el codi es comporti igual, no cal provar-los tots dos. Agrupes les entrades en <strong>classes</strong> i proves una mostra de cada.</p>
+
+  <h3>Exemple: descompte segons edat</h3>
+  <p><strong>Especificació:</strong></p>
+  <ul>
+    <li>0-17 anys: descompte del 50%</li>
+    <li>18-64 anys: sense descompte</li>
+    <li>65+ anys: descompte del 30%</li>
+    <li>Edat negativa o > 120: error</li>
+  </ul>
+
+  <h3>Classes que en surten</h3>
+  <table>
+    <tr><th>#</th><th>Classe</th><th>Rang</th><th>Tipus</th><th>Valor de prova</th></tr>
+    <tr><td>1</td><td>Menor d'edat</td><td>[0, 17]</td><td>vàlida</td><td>10</td></tr>
+    <tr><td>2</td><td>Adult</td><td>[18, 64]</td><td>vàlida</td><td>35</td></tr>
+    <tr><td>3</td><td>Sènior</td><td>[65, 120]</td><td>vàlida</td><td>72</td></tr>
+    <tr><td>4</td><td>Negatiu</td><td>(-∞, -1]</td><td>invàlida</td><td>-5</td></tr>
+    <tr><td>5</td><td>Massa gran</td><td>[121, +∞)</td><td>invàlida</td><td>200</td></tr>
+  </table>
+
+  <div class="card good">
+    <div class="card-title">Resultat</div>
+    <p>Amb només <strong>5 proves</strong> hem cobert totes les zones de comportament diferent. Si en lloc d'això haguéssim provat edats 1, 2, 3, 4... seria absurd: les edats 1-17 fan el mateix.</p>
+  </div>
+
+  <div class="card warn">
+    <div class="card-title">⚠️ Regla per identificar classes</div>
+    <p>Una classe per cada interval on el codi es comporta <strong>de la mateixa manera</strong>. Si el comportament canvia (descompte vs error, una branca vs una altra), és una nova classe.</p>
+  </div>
+
+  <div class="card info">
+    <div class="card-title">Classes vàlides i invàlides</div>
+    <p>L'enunciat de la PAF moltes vegades demana <strong>com a mínim una de cada tipus</strong>: vàlides (entrades que el codi accepta) i invàlides (entrades que ha de rebutjar amb error).</p>
+  </div>
+</section>
+
+<!-- =================== VALORS LÍMIT =================== -->
+<section id="limit" class="section">
+  <h2>Valors límit (boundary values)</h2>
+  <p>Els bugs es concentren <strong>als extrems</strong> de les classes. Si una classe és [18, 64], els valors crítics són 18, 64, i els seus veïns immediats (17, 19, 63, 65).</p>
+
+  <h3>Per a cada límit, prova 3 valors</h3>
+  <ol>
+    <li>Just <strong>per sota</strong> del límit</li>
+    <li>El <strong>límit</strong> exacte</li>
+    <li>Just <strong>per sobre</strong> del límit</li>
+  </ol>
+
+  <h3>Exemple amb el mateix problema d'edat</h3>
+  <table>
+    <tr><th>Límit</th><th>Per sota</th><th>Límit</th><th>Per sobre</th></tr>
+    <tr><td>Inici menor</td><td>-1 (invàlid)</td><td>0 (vàlid)</td><td>1 (vàlid)</td></tr>
+    <tr><td>Final menor</td><td>16 (vàlid)</td><td>17 (vàlid)</td><td>18 (canvi)</td></tr>
+    <tr><td>Final adult</td><td>63 (vàlid)</td><td>64 (vàlid)</td><td>65 (canvi)</td></tr>
+    <tr><td>Final sènior</td><td>119 (vàlid)</td><td>120 (vàlid)</td><td>121 (invàlid)</td></tr>
+  </table>
+
+  <div class="card good">
+    <div class="card-title">Per què funciona això</div>
+    <p>Els errors típics són confondre <code>&lt;</code> amb <code>&lt;=</code>, o <code>&gt;</code> amb <code>&gt;=</code>. Provar els valors als límits els detecta immediatament.</p>
+    <p><strong>Exemple:</strong> Si el codi diu <code>if (edat &lt; 18)</code> en lloc de <code>if (edat &lt;= 17)</code>, només la prova amb edat=17 detectarà la diferència entre les dues versions del codi.</p>
+  </div>
+
+  <div class="card warn">
+    <div class="card-title">⚠️ Combinació equivalència + límit</div>
+    <p>Quasi sempre es fan totes dues juntes: identifiques les classes (equivalència) i després afegeixes proves als límits de cada classe. És la combinació estàndard de proves de caixa negra.</p>
+  </div>
+</section>
+
+<!-- =================== CICLOMÀTICA =================== -->
+<section id="ciclo" class="section">
+  <h2>Complexitat ciclomàtica V(G)</h2>
+  <p>Una mètrica que diu <strong>quantes proves diferents calen com a mínim</strong> per cobrir tots els camins lògics del codi.</p>
+
+  <h3>Fórmula</h3>
+  <pre><code>V(G) = aristes − nodes + 2</code></pre>
+  <p>On el graf G és el <strong>diagrama de flux</strong> del codi: cada instrucció és un node, cada salt una aresta.</p>
+
+  <h3>Atall pràctic: comptar punts de decisió + 1</h3>
+  <p>Forma equivalent i molt més ràpida:</p>
+  <pre><code>V(G) = (nombre de punts de decisió) + 1</code></pre>
+  <p>Un punt de decisió és cadascun d'aquests:</p>
+  <ul>
+    <li>Cada <code>if</code></li>
+    <li>Cada <code>else if</code></li>
+    <li>Cada <code>case</code> d'un switch</li>
+    <li>Cada <code>while</code> / <code>for</code> / <code>do-while</code></li>
+    <li>Cada operador lògic <code>&amp;&amp;</code> o <code>||</code> dins d'una condició</li>
+  </ul>
+
+  <div class="card warn">
+    <div class="card-title">⚠️ L'operador lògic compta!</div>
+    <pre><code><span class="kw">if</span> (a &gt; <span class="num">0</span> &amp;&amp; b &lt; <span class="num">100</span>) { ... }</code></pre>
+    <p>Aquesta línia té <strong>2 punts de decisió</strong>: el <code>if</code> i el <code>&amp;&amp;</code>. Internament Java fa curtcircuit, i això crea dos camins (si <code>a&gt;0</code> és fals, ja no avalua <code>b&lt;100</code>).</p>
+  </div>
+
+  <h3>Exemple pas a pas</h3>
+  <pre><code><span class="kw">public</span> <span class="typ">String</span> <span class="fn">classificar</span>(<span class="kw">int</span> nota) {       <span class="com">// node 1 (entrada)</span>
+    <span class="kw">if</span> (nota &lt; <span class="num">0</span> || nota &gt; <span class="num">10</span>) {           <span class="com">// 2 decisions (if + ||)</span>
+        <span class="kw">return</span> <span class="str">"Error"</span>;
+    }
+    <span class="kw">if</span> (nota &lt; <span class="num">5</span>) {                          <span class="com">// 1 decisió</span>
+        <span class="kw">return</span> <span class="str">"Suspès"</span>;
+    } <span class="kw">else if</span> (nota &lt; <span class="num">7</span>) {                   <span class="com">// 1 decisió</span>
+        <span class="kw">return</span> <span class="str">"Aprovat"</span>;
+    } <span class="kw">else</span> {
+        <span class="kw">return</span> <span class="str">"Notable"</span>;
+    }
+}</code></pre>
+
+  <h3>Càlcul</h3>
+  <p>Punts de decisió: 1 (<code>if</code>) + 1 (<code>||</code>) + 1 (<code>if</code>) + 1 (<code>else if</code>) = <strong>4</strong></p>
+  <p>V(G) = 4 + 1 = <strong>5</strong></p>
+
+  <div class="card good">
+    <div class="card-title">Interpretació</div>
+    <p>Calen com a mínim <strong>5 proves</strong> per cobrir tots els camins lògics. Una pràctica habitual diu que codi amb V(G) > 10 és massa complex i s'hauria de refactoritzar.</p>
+  </div>
+</section>
+
+<!-- =================== CAMINS =================== -->
+<section id="camins" class="section">
+  <h2>Camins independents</h2>
+  <p>Un cop saps V(G), has de trobar <strong>N camins diferents</strong> pel diagrama de flux, on N = V(G). Cadascun ha d'incloure almenys una aresta nova respecte els anteriors.</p>
+
+  <h3>Procediment</h3>
+  <ol>
+    <li>Dibuixa el diagrama de flux (nodes + aristes).</li>
+    <li>Numera els nodes (1, 2, 3...).</li>
+    <li>Comença pel camí <strong>"directe"</strong> (entrada → primera sortida).</li>
+    <li>Per cada nou camí, fes un canvi a una decisió que abans havies fet de l'altra manera.</li>
+    <li>Continua fins tenir V(G) camins, cadascun amb almenys una nova aresta.</li>
+  </ol>
+
+  <h3>Exemple amb el <code>classificar()</code> anterior</h3>
+  <p>V(G) = 5 → calen 5 camins:</p>
+  <table>
+    <tr><th>#</th><th>Camí</th><th>Cas de prova</th><th>Sortida</th></tr>
+    <tr><td>1</td><td>nota fora rang (negativa)</td><td>nota = -5</td><td>"Error"</td></tr>
+    <tr><td>2</td><td>nota fora rang (massa alta)</td><td>nota = 15</td><td>"Error"</td></tr>
+    <tr><td>3</td><td>nota vàlida, suspesa</td><td>nota = 3</td><td>"Suspès"</td></tr>
+    <tr><td>4</td><td>nota vàlida, aprovada</td><td>nota = 6</td><td>"Aprovat"</td></tr>
+    <tr><td>5</td><td>nota vàlida, notable</td><td>nota = 8</td><td>"Notable"</td></tr>
+  </table>
+
+  <div class="card info">
+    <div class="card-title">💡 Truc PAF</div>
+    <p>Per cada camí, explicita: <strong>(a)</strong> per quins nodes passa, <strong>(b)</strong> quin valor d'entrada el provoca, <strong>(c)</strong> quina sortida produeix.</p>
+  </div>
+
+  <div class="card warn">
+    <div class="card-title">⚠️ Diferència entre camins i casos de prova</div>
+    <p>Un camí independent és un recorregut pel graf. Un cas de prova és l'entrada concreta que el produeix. Per cada camí cal un cas de prova, però un mateix camí pot tenir múltiples casos.</p>
+    <p>Ex: nota=3 i nota=4 segueixen el mateix camí ("Suspès"). Només cal un d'ells per al test.</p>
+  </div>
+</section>
+
+<!-- =================== EXEMPLE =================== -->
+<section id="exemple" class="section">
+  <h2>Exemple complet (estil EAC3 / PAF)</h2>
+
+  <h3>Especificació</h3>
+  <p>Un mètode <code>calcularPreu(int unitats, boolean esVip)</code> calcula el preu d'una comanda:</p>
+  <ul>
+    <li>Unitats < 1: llança IllegalArgumentException</li>
+    <li>Unitats 1-9: preu = unitats × 10</li>
+    <li>Unitats 10-49: preu = unitats × 9 (descompte volum)</li>
+    <li>Unitats ≥ 50: preu = unitats × 8 (descompte gran)</li>
+    <li>Si esVip = true: aplicar 10% addicional de descompte al final</li>
+  </ul>
+
+  <h3>1. Caixa negra: classes d'equivalència</h3>
+  <table>
+    <tr><th>Variable</th><th>Classes vàlides</th><th>Classes invàlides</th></tr>
+    <tr><td>unitats</td><td>[1, 9], [10, 49], [50, ∞)</td><td>(-∞, 0]</td></tr>
+    <tr><td>esVip</td><td>true, false</td><td>(no n'hi ha)</td></tr>
+  </table>
+
+  <h3>2. Casos de prova per classes (mínim)</h3>
+  <table>
+    <tr><th>#</th><th>unitats</th><th>esVip</th><th>Resultat esperat</th></tr>
+    <tr><td>CP1</td><td>5</td><td>false</td><td>50</td></tr>
+    <tr><td>CP2</td><td>20</td><td>false</td><td>180</td></tr>
+    <tr><td>CP3</td><td>100</td><td>false</td><td>800</td></tr>
+    <tr><td>CP4</td><td>5</td><td>true</td><td>45</td></tr>
+    <tr><td>CP5</td><td>-3</td><td>false</td><td>IllegalArgumentException</td></tr>
+  </table>
+
+  <h3>3. Caixa blanca: complexitat ciclomàtica</h3>
+  <pre><code><span class="kw">public double</span> <span class="fn">calcularPreu</span>(<span class="kw">int</span> u, <span class="kw">boolean</span> vip) {
+    <span class="kw">if</span> (u &lt; <span class="num">1</span>) {                          <span class="com">// decisió 1</span>
+        <span class="kw">throw new</span> <span class="typ">IllegalArgumentException</span>();
+    }
+    <span class="kw">double</span> preu;
+    <span class="kw">if</span> (u &lt; <span class="num">10</span>) preu = u * <span class="num">10</span>;             <span class="com">// decisió 2</span>
+    <span class="kw">else if</span> (u &lt; <span class="num">50</span>) preu = u * <span class="num">9</span>;         <span class="com">// decisió 3</span>
+    <span class="kw">else</span> preu = u * <span class="num">8</span>;
+    <span class="kw">if</span> (vip) preu *= <span class="num">0.9</span>;                  <span class="com">// decisió 4</span>
+    <span class="kw">return</span> preu;
+}</code></pre>
+  <p>Punts de decisió: 4 → V(G) = <strong>5</strong></p>
+
+  <h3>4. Camins independents</h3>
+  <ol>
+    <li>u &lt; 1 → excepció</li>
+    <li>u &lt; 10, no vip → preu × 10</li>
+    <li>u en [10, 49], no vip → preu × 9</li>
+    <li>u ≥ 50, no vip → preu × 8</li>
+    <li>qualsevol u vàlid, vip → s'aplica 0.9</li>
+  </ol>
+
+  <h3>5. Valors límit</h3>
+  <ul>
+    <li><strong>0, 1, 2</strong> → al voltant del límit inferior vàlid</li>
+    <li><strong>9, 10, 11</strong> → al voltant del canvi de tarifa volum</li>
+    <li><strong>49, 50, 51</strong> → al voltant del canvi de tarifa gran</li>
+  </ul>
+  <p>Combinant les 3 tècniques (equivalència + límits + camins) cobreixes el codi de manera robusta.</p>
+</section>
+
+<!-- =================== QUIZ =================== -->
+<section id="quiz" class="section">
+  <h2>Quiz — Proves (12 preguntes)</h2>
+
+  <div class="quiz">
+
+    <div class="q">
+      <div class="q-text">1. Les proves de caixa negra es basen en:</div>
+      <div class="opts">
+        <button class="opt" data-opt="a" onclick="answer(this,'b','p1')">a) Mirar el codi font del mètode</button>
+        <button class="opt" data-opt="b" onclick="answer(this,'b','p1')">b) Les especificacions (entrades → sortides esperades)</button>
+        <button class="opt" data-opt="c" onclick="answer(this,'b','p1')">c) Comptar les línies de codi</button>
+        <button class="opt" data-opt="d" onclick="answer(this,'b','p1')">d) La velocitat d'execució</button>
+      </div>
+      <div class="explain" id="exp_p1">"Negra" = no veus dins. Provem entrades → comprovem sortides, sense saber com es calculen internament.</div>
+    </div>
+
+    <div class="q">
+      <div class="q-text">2. Les classes d'equivalència serveixen per:</div>
+      <div class="opts">
+        <button class="opt" data-opt="a" onclick="answer(this,'c','p2')">a) Calcular la complexitat ciclomàtica</button>
+        <button class="opt" data-opt="b" onclick="answer(this,'c','p2')">b) Trobar errors de compilació</button>
+        <button class="opt" data-opt="c" onclick="answer(this,'c','p2')">c) Agrupar entrades amb el mateix comportament i provar només una mostra de cada grup</button>
+        <button class="opt" data-opt="d" onclick="answer(this,'c','p2')">d) Verificar la sintaxi del codi</button>
+      </div>
+      <div class="explain" id="exp_p2">L'objectiu és reduir el nombre de proves: si edats 1-17 fan el mateix, no cal provar les 17 — n'hi ha prou amb una.</div>
+    </div>
+
+    <div class="q">
+      <div class="q-text">3. Per a una classe vàlida de l'interval [10, 99], els valors límit típics són:</div>
+      <div class="opts">
+        <button class="opt" data-opt="a" onclick="answer(this,'b','p3')">a) Només 10 i 99</button>
+        <button class="opt" data-opt="b" onclick="answer(this,'b','p3')">b) 9, 10, 11, 98, 99, 100</button>
+        <button class="opt" data-opt="c" onclick="answer(this,'b','p3')">c) Només 50 (el punt mig)</button>
+        <button class="opt" data-opt="d" onclick="answer(this,'b','p3')">d) Tots els valors de 10 a 99</button>
+      </div>
+      <div class="explain" id="exp_p3">Per a cada límit: just per sota, límit, just per sobre. Així detectes errors típics de <code>&lt;</code> vs <code>&lt;=</code>.</div>
+    </div>
+
+    <div class="q">
+      <div class="q-text">4. La fórmula de complexitat ciclomàtica V(G) és:</div>
+      <div class="opts">
+        <button class="opt" data-opt="a" onclick="answer(this,'c','p4')">a) nodes + aristes</button>
+        <button class="opt" data-opt="b" onclick="answer(this,'c','p4')">b) nodes − aristes − 2</button>
+        <button class="opt" data-opt="c" onclick="answer(this,'c','p4')">c) aristes − nodes + 2</button>
+        <button class="opt" data-opt="d" onclick="answer(this,'c','p4')">d) aristes × nodes</button>
+      </div>
+      <div class="explain" id="exp_p4">V(G) = E − N + 2 on E són aristes i N nodes. Equivalent: nombre de punts de decisió + 1.</div>
+    </div>
+
+    <div class="q">
+      <div class="q-text">5. Aquest codi té quina complexitat ciclomàtica?<br>
+      <pre><code><span class="kw">if</span> (a &gt; <span class="num">0</span>) {
+    <span class="kw">if</span> (b &gt; <span class="num">0</span>) <span class="fn">x</span>();
+    <span class="kw">else</span> <span class="fn">y</span>();
+}</code></pre></div>
+      <div class="opts">
+        <button class="opt" data-opt="a" onclick="answer(this,'b','p5')">a) 2</button>
+        <button class="opt" data-opt="b" onclick="answer(this,'b','p5')">b) 3</button>
+        <button class="opt" data-opt="c" onclick="answer(this,'b','p5')">c) 4</button>
+        <button class="opt" data-opt="d" onclick="answer(this,'b','p5')">d) 5</button>
+      </div>
+      <div class="explain" id="exp_p5">2 punts de decisió (2 ifs) + 1 = 3. Camins: (a≤0), (a&gt;0 i b&gt;0), (a&gt;0 i b≤0).</div>
+    </div>
+
+    <div class="q">
+      <div class="q-text">6. Aquesta línia té quants punts de decisió?<br>
+      <code>if (a &gt; 0 &amp;&amp; b &lt; 10 || c == 5)</code></div>
+      <div class="opts">
+        <button class="opt" data-opt="a" onclick="answer(this,'c','p6')">a) 1</button>
+        <button class="opt" data-opt="b" onclick="answer(this,'c','p6')">b) 2</button>
+        <button class="opt" data-opt="c" onclick="answer(this,'c','p6')">c) 3</button>
+        <button class="opt" data-opt="d" onclick="answer(this,'c','p6')">d) 4</button>
+      </div>
+      <div class="explain" id="exp_p6">El if + l'&amp;&amp; + el || = 3 decisions. Cadascuna pot fer curtcircuit i alterar el flux.</div>
+    </div>
+
+    <div class="q">
+      <div class="q-text">7. Què és un "camí independent"?</div>
+      <div class="opts">
+        <button class="opt" data-opt="a" onclick="answer(this,'c','p7')">a) Una crida a una funció externa</button>
+        <button class="opt" data-opt="b" onclick="answer(this,'c','p7')">b) Una sortida del mètode</button>
+        <button class="opt" data-opt="c" onclick="answer(this,'c','p7')">c) Un recorregut pel graf de flux que conté almenys una aresta no inclosa en camins anteriors</button>
+        <button class="opt" data-opt="d" onclick="answer(this,'c','p7')">d) Un mètode privat dins una classe</button>
+      </div>
+      <div class="explain" id="exp_p7">Cada nou camí ha d'incloure alguna cosa nova. Si dos camins recorren exactament les mateixes aristes, no són independents.</div>
+    </div>
+
+    <div class="q">
+      <div class="q-text">8. Si V(G) = 5, quantes proves cal com a mínim per cobrir tots els camins lògics?</div>
+      <div class="opts">
+        <button class="opt" data-opt="a" onclick="answer(this,'c','p8')">a) 1</button>
+        <button class="opt" data-opt="b" onclick="answer(this,'c','p8')">b) 3</button>
+        <button class="opt" data-opt="c" onclick="answer(this,'c','p8')">c) 5</button>
+        <button class="opt" data-opt="d" onclick="answer(this,'c','p8')">d) 10</button>
+      </div>
+      <div class="explain" id="exp_p8">V(G) és exactament el nombre mínim de camins independents que cal provar per cobrir tot el flux.</div>
+    </div>
+
+    <div class="q">
+      <div class="q-text">9. Una especificació diu: "El camp edat ha d'estar entre 0 i 120 inclosos". Quines classes d'equivalència s'identifiquen?</div>
+      <div class="opts">
+        <button class="opt" data-opt="a" onclick="answer(this,'d','p9')">a) 1 vàlida: [0, 120]</button>
+        <button class="opt" data-opt="b" onclick="answer(this,'d','p9')">b) 2 invàlides: (-∞, -1] i [121, +∞)</button>
+        <button class="opt" data-opt="c" onclick="answer(this,'d','p9')">c) Cap classe específica</button>
+        <button class="opt" data-opt="d" onclick="answer(this,'d','p9')">d) 1 vàlida [0, 120] i 2 invàlides: (-∞, -1] i [121, +∞)</button>
+      </div>
+      <div class="explain" id="exp_p9">Cal identificar tant les classes vàlides com les invàlides per fer una cobertura completa.</div>
+    </div>
+
+    <div class="q">
+      <div class="q-text">10. Les proves de caixa blanca són pròpies de:</div>
+      <div class="opts">
+        <button class="opt" data-opt="a" onclick="answer(this,'b','p10')">a) Usuaris finals</button>
+        <button class="opt" data-opt="b" onclick="answer(this,'b','p10')">b) Desenvolupadors (proves unitàries)</button>
+        <button class="opt" data-opt="c" onclick="answer(this,'b','p10')">c) Dissenyadors gràfics</button>
+        <button class="opt" data-opt="d" onclick="answer(this,'b','p10')">d) Departament de màrqueting</button>
+      </div>
+      <div class="explain" id="exp_p10">Cal accés al codi font. Qui prova ha de conèixer la implementació interna.</div>
+    </div>
+
+    <div class="q">
+      <div class="q-text">11. Quina mètrica indica que un mètode és massa complex i s'hauria de refactoritzar?</div>
+      <div class="opts">
+        <button class="opt" data-opt="a" onclick="answer(this,'c','p11')">a) V(G) = 1</button>
+        <button class="opt" data-opt="b" onclick="answer(this,'c','p11')">b) V(G) = 3</button>
+        <button class="opt" data-opt="c" onclick="answer(this,'c','p11')">c) V(G) > 10</button>
+        <button class="opt" data-opt="d" onclick="answer(this,'c','p11')">d) V(G) = 5</button>
+      </div>
+      <div class="explain" id="exp_p11">Una regla heurística molt acceptada: si V(G) > 10, el mètode és massa complex; cal extreure submètodes.</div>
+    </div>
+
+    <div class="q">
+      <div class="q-text">12. La combinació estàndard per a proves de caixa negra és:</div>
+      <div class="opts">
+        <button class="opt" data-opt="a" onclick="answer(this,'b','p12')">a) Complexitat ciclomàtica + camins independents</button>
+        <button class="opt" data-opt="b" onclick="answer(this,'b','p12')">b) Classes d'equivalència + valors límit</button>
+        <button class="opt" data-opt="c" onclick="answer(this,'b','p12')">c) Diagrames de classes + diagrames de seqüència</button>
+        <button class="opt" data-opt="d" onclick="answer(this,'b','p12')">d) Refacció + Javadoc</button>
+      </div>
+      <div class="explain" id="exp_p12">Equivalència identifica els grans grups, límits cobreix els extrems on apareixen els bugs. Són dues tècniques complementàries de caixa negra.</div>
+    </div>
+
+  </div>
+</section>
+
+<div id="tracker" class="tracker"></div>
+<script src="shared.js"></script>
+</body>
+</html>

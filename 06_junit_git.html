@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>06 · JUnit + Git — Repàs PAF M0487</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header>
+  <h1>06 · JUnit + Git — interpretació</h1>
+  <a class="back" href="index.html">← Índex</a>
+</header>
+
+<div class="tabs">
+  <button class="tab" onclick="showTab('intro', this)">Què cau</button>
+  <button class="tab" onclick="showTab('junit', this)">JUnit — anotacions</button>
+  <button class="tab" onclick="showTab('asserts', this)">Asserts</button>
+  <button class="tab" onclick="showTab('git_basics', this)">Git — fonaments</button>
+  <button class="tab" onclick="showTab('branques', this)">Branques i merges</button>
+  <button class="tab" onclick="showTab('conflictes', this)">Conflictes</button>
+  <button class="tab" onclick="showTab('quiz', this)">Quiz</button>
+</div>
+
+<!-- =================== INTRO =================== -->
+<section id="intro" class="section">
+  <div class="hero">
+    <h2>Aquest tema cau només com a test</h2>
+    <p class="lead">A la PAF no hauràs d'escriure tests JUnit ni executar ordres Git. Hauràs d'<strong>interpretar</strong> codi i ordres ja escrits, i identificar el que fan.</p>
+  </div>
+
+  <div class="card warn">
+    <div class="card-title">El que es pot preguntar</div>
+    <ul>
+      <li>"Què fa l'anotació <code>@Test</code>?"</li>
+      <li>"Aquest <code>assertEquals(5, x)</code> falla? Per què?"</li>
+      <li>"Quina ordre Git crea una branca nova?"</li>
+      <li>"Què passa si fas <code>git merge</code> i hi ha un conflicte?"</li>
+      <li>"Per a què serveix el fitxer <code>.gitignore</code>?"</li>
+    </ul>
+  </div>
+</section>
+
+<!-- =================== JUNIT ANOTACIONS =================== -->
+<section id="junit" class="section">
+  <h2>JUnit 5 — Anotacions clau</h2>
+
+  <table>
+    <tr><th>Anotació</th><th>Què fa</th><th>Quan s'executa</th></tr>
+    <tr><td><code>@Test</code></td><td>Marca un mètode com a prova</td><td>Cada vegada que executes els tests</td></tr>
+    <tr><td><code>@BeforeEach</code></td><td>Codi que s'executa <strong>abans de cada test</strong></td><td>Abans de cada <code>@Test</code></td></tr>
+    <tr><td><code>@AfterEach</code></td><td>Codi que s'executa <strong>després de cada test</strong></td><td>Després de cada <code>@Test</code></td></tr>
+    <tr><td><code>@BeforeAll</code></td><td>Una sola vegada al principi (mètode <strong>static</strong>)</td><td>Abans del primer test</td></tr>
+    <tr><td><code>@AfterAll</code></td><td>Una sola vegada al final (mètode <strong>static</strong>)</td><td>Després de l'últim test</td></tr>
+    <tr><td><code>@Disabled</code></td><td>Salta aquest test (no s'executa)</td><td>Mai</td></tr>
+    <tr><td><code>@DisplayName("...")</code></td><td>Nom amigable que apareix als resultats</td><td>—</td></tr>
+  </table>
+
+  <h3>Exemple complet</h3>
+  <pre><code><span class="kw">package</span> gestio;
+
+<span class="kw">import</span> org.junit.jupiter.api.Test;
+<span class="kw">import</span> org.junit.jupiter.api.BeforeEach;
+<span class="kw">import static</span> org.junit.jupiter.api.Assertions.*;
+
+<span class="kw">public class</span> <span class="typ">TestControlVol</span> {
+
+    <span class="kw">private</span> <span class="typ">ControlVol</span> cv;
+
+    <span class="anno">@BeforeEach</span>
+    <span class="kw">void</span> <span class="fn">setUp</span>() {
+        cv = <span class="kw">new</span> <span class="typ">ControlVol</span>();    <span class="com">// abans de cada test</span>
+    }
+
+    <span class="anno">@Test</span>
+    <span class="kw">void</span> <span class="fn">testBateriaOptima</span>() <span class="kw">throws</span> <span class="typ">Exception</span> {
+        <span class="typ">String</span> resultat = <span class="typ">ControlVol</span>.<span class="fn">alertaBateria</span>(<span class="num">95</span>);
+        <span class="fn">assertEquals</span>(<span class="str">"Bateria òptima"</span>, resultat);
+    }
+
+    <span class="anno">@Test</span>
+    <span class="kw">void</span> <span class="fn">testValorInvalid</span>() {
+        <span class="fn">assertThrows</span>(<span class="typ">BateriaIncorrectaException</span>.<span class="kw">class</span>, () -&gt; {
+            <span class="typ">ControlVol</span>.<span class="fn">alertaBateria</span>(<span class="num">-5</span>);
+        });
+    }
+}</code></pre>
+
+  <div class="card good">
+    <div class="card-title">💡 Convenció de noms</div>
+    <p>El nom de la classe de test sol començar per <strong>Test</strong> (<code>TestControlVol</code>) o acabar amb <strong>Tests</strong>. Cada mètode <code>@Test</code> hauria d'expressar <strong>què prova</strong>: <code>testValorInvalid</code>, <code>testBateriaOptima</code>...</p>
+  </div>
+</section>
+
+<!-- =================== ASSERTS =================== -->
+<section id="asserts" class="section">
+  <h2>Mètodes <code>assert</code> de JUnit 5</h2>
+  <p>Són mètodes estàtics de la classe <code>org.junit.jupiter.api.Assertions</code>.</p>
+
+  <table>
+    <tr><th>Mètode</th><th>Què comprova</th><th>Exemple</th></tr>
+    <tr>
+      <td><code>assertEquals(esperat, actual)</code></td>
+      <td>Que els dos valors siguin iguals</td>
+      <td><code>assertEquals(5, x)</code></td>
+    </tr>
+    <tr>
+      <td><code>assertNotEquals(no_esperat, actual)</code></td>
+      <td>Que NO siguin iguals</td>
+      <td><code>assertNotEquals(0, divisor)</code></td>
+    </tr>
+    <tr>
+      <td><code>assertTrue(condició)</code></td>
+      <td>Que sigui <code>true</code></td>
+      <td><code>assertTrue(llista.isEmpty())</code></td>
+    </tr>
+    <tr>
+      <td><code>assertFalse(condició)</code></td>
+      <td>Que sigui <code>false</code></td>
+      <td><code>assertFalse(usuari.isAdmin())</code></td>
+    </tr>
+    <tr>
+      <td><code>assertNull(obj)</code></td>
+      <td>Que l'objecte sigui <code>null</code></td>
+      <td><code>assertNull(resultat)</code></td>
+    </tr>
+    <tr>
+      <td><code>assertNotNull(obj)</code></td>
+      <td>Que l'objecte NO sigui <code>null</code></td>
+      <td><code>assertNotNull(usuari)</code></td>
+    </tr>
+    <tr>
+      <td><code>assertThrows(Tipus.class, () -> ...)</code></td>
+      <td>Que el codi llanci una excepció</td>
+      <td>Vegeu exemple a baix</td>
+    </tr>
+    <tr>
+      <td><code>assertArrayEquals(a, b)</code></td>
+      <td>Que dos arrays siguin iguals element a element</td>
+      <td><code>assertArrayEquals(new int[]{1,2}, x)</code></td>
+    </tr>
+    <tr>
+      <td><code>fail("missatge")</code></td>
+      <td>Forçar que la prova falli sempre</td>
+      <td><code>fail("No s'hauria d'arribar aquí")</code></td>
+    </tr>
+  </table>
+
+  <h3>L'ordre dels arguments d'<code>assertEquals</code></h3>
+  <div class="card warn">
+    <div class="card-title">⚠️ Sempre: esperat primer, actual després</div>
+    <pre><code><span class="fn">assertEquals</span>(<span class="num">10</span>, <span class="fn">calcular</span>(<span class="num">5</span>));
+<span class="com">//           ↑esperat    ↑resultat real</span></code></pre>
+    <p>Si t'equivoques d'ordre, el test funciona igual però el missatge d'error queda invertit i confús ("expected 5, but was 10" quan en realitat era al revés).</p>
+  </div>
+
+  <h3><code>assertThrows</code> — el important per a la PAF</h3>
+  <pre><code><span class="anno">@Test</span>
+<span class="kw">void</span> <span class="fn">testValorNegatiu</span>() {
+    <span class="fn">assertThrows</span>(<span class="typ">BateriaIncorrectaException</span>.<span class="kw">class</span>, () -&gt; {
+        <span class="typ">ControlVol</span>.<span class="fn">alertaBateria</span>(<span class="num">-5</span>);
+    });
+}</code></pre>
+
+  <div class="card good">
+    <div class="card-title">Llegir aquest assert</div>
+    <p>Diu: "<em>esperem que el codi dins la lambda llanci una <code>BateriaIncorrectaException</code></em>".</p>
+    <ul>
+      <li>Si llança aquesta excepció → <strong>test OK</strong></li>
+      <li>Si llança una <strong>altra</strong> excepció → test FALLA</li>
+      <li>Si <strong>no llança cap</strong> excepció → test FALLA</li>
+    </ul>
+  </div>
+
+  <div class="card bad">
+    <div class="card-title">❌ Error típic</div>
+    <p>Si proves un mètode que llança una excepció <strong>checked</strong> (Exception, no RuntimeException), has de marcar el test amb <code>throws</code>:</p>
+    <pre><code><span class="anno">@Test</span>
+<span class="kw">void</span> <span class="fn">testBateriaNormal</span>() <span class="kw">throws</span> <span class="typ">Exception</span> {  <span class="com">// ← necessari!</span>
+    <span class="fn">assertEquals</span>(<span class="str">"Operació normal"</span>, <span class="typ">ControlVol</span>.<span class="fn">alertaBateria</span>(<span class="num">70</span>));
+}</code></pre>
+  </div>
+
+  <h3>Interpretar resultats d'execució</h3>
+  <table>
+    <tr><th>Símbol</th><th>Significat</th></tr>
+    <tr><td>✓ verd</td><td>Test passat (assert OK)</td></tr>
+    <tr><td>✗ vermell</td><td>Test fallat (assert FAILED)</td></tr>
+    <tr><td>⚠️ groc</td><td>Error d'execució (excepció no esperada)</td></tr>
+    <tr><td>Saltat</td><td>El test té <code>@Disabled</code></td></tr>
+  </table>
+</section>
+
+<!-- =================== GIT BASICS =================== -->
+<section id="git_basics" class="section">
+  <h2>Git — ordres bàsiques</h2>
+
+  <table>
+    <tr><th>Ordre</th><th>Què fa</th></tr>
+    <tr><td><code>git init</code></td><td>Inicialitza un repositori nou a la carpeta actual</td></tr>
+    <tr><td><code>git status</code></td><td>Mostra fitxers modificats, staged, no rastrejats</td></tr>
+    <tr><td><code>git add &lt;fitxer&gt;</code></td><td>Afegeix un fitxer a l'àrea de staging</td></tr>
+    <tr><td><code>git add .</code></td><td>Afegeix tots els fitxers modificats</td></tr>
+    <tr><td><code>git commit -m "missatge"</code></td><td>Crea un commit amb els canvis staged</td></tr>
+    <tr><td><code>git log</code></td><td>Mostra la història de commits</td></tr>
+    <tr><td><code>git diff</code></td><td>Mostra els canvis pendents</td></tr>
+    <tr><td><code>git restore &lt;fitxer&gt;</code></td><td>Descarta canvis locals d'un fitxer</td></tr>
+  </table>
+
+  <h3>El cicle típic</h3>
+  <pre><code>Carpeta de treball  →  Staging area  →  Repositori local
+    (modifies)         (git add)         (git commit)</code></pre>
+
+  <h3>Estats dels fitxers</h3>
+  <table>
+    <tr><th>Estat</th><th>Significat</th></tr>
+    <tr><td><strong>Untracked</strong></td><td>Git no en sap res, mai s'ha fet <code>add</code></td></tr>
+    <tr><td><strong>Modified</strong></td><td>Modificat però encara no afegit a staging</td></tr>
+    <tr><td><strong>Staged</strong></td><td>Afegit amb <code>git add</code>, llest per commit</td></tr>
+    <tr><td><strong>Committed</strong></td><td>Guardat al repositori</td></tr>
+  </table>
+
+  <h3>El fitxer .gitignore</h3>
+  <pre><code><span class="com"># Comentaris amb #</span>
+*.class
+*.log
+target/
+.DS_Store
+node_modules/</code></pre>
+  <p>Indica a Git quins fitxers o patrons ha d'<strong>ignorar</strong> (no rastrejar). Típicament: binaris generats, logs, configuracions locals, secrets.</p>
+
+  <div class="card warn">
+    <div class="card-title">⚠️ Una vegada un fitxer està rastrejat...</div>
+    <p>Afegir-lo al <code>.gitignore</code> NO el treu de Git. Cal fer <code>git rm --cached &lt;fitxer&gt;</code> per fer que Git deixi de seguir-lo.</p>
+  </div>
+</section>
+
+<!-- =================== BRANQUES =================== -->
+<section id="branques" class="section">
+  <h2>Branques i fusions</h2>
+
+  <table>
+    <tr><th>Ordre</th><th>Què fa</th></tr>
+    <tr><td><code>git branch</code></td><td>Llista les branques (* = la actual)</td></tr>
+    <tr><td><code>git branch &lt;nom&gt;</code></td><td>Crea una branca nova (no s'hi mou)</td></tr>
+    <tr><td><code>git checkout &lt;nom&gt;</code></td><td>Es mou a una branca existent</td></tr>
+    <tr><td><code>git checkout -b &lt;nom&gt;</code></td><td>Crea i es mou a la branca nova (atall)</td></tr>
+    <tr><td><code>git switch &lt;nom&gt;</code></td><td>Versió moderna de <code>checkout</code> per canviar branca</td></tr>
+    <tr><td><code>git merge &lt;nom&gt;</code></td><td>Fusiona la branca <code>&lt;nom&gt;</code> a la actual</td></tr>
+    <tr><td><code>git branch -d &lt;nom&gt;</code></td><td>Esborra una branca (si està fusionada)</td></tr>
+  </table>
+
+  <h3>Vocabulari important</h3>
+  <table>
+    <tr><th>Terme</th><th>Significat</th></tr>
+    <tr><td><strong>HEAD</strong></td><td>La versió més recent de la branca on ets ara</td></tr>
+    <tr><td><strong>master / main</strong></td><td>La branca principal (el "tronc")</td></tr>
+    <tr><td><strong>Branca</strong></td><td>Una línia de desenvolupament paral·lela</td></tr>
+    <tr><td><strong>Commit</strong></td><td>Un punt fix de la història (snapshot)</td></tr>
+    <tr><td><strong>Merge</strong></td><td>Unir canvis d'una branca a una altra</td></tr>
+  </table>
+
+  <h3>Tipus de merge</h3>
+  <div class="card good">
+    <div class="card-title">Fast-forward</div>
+    <p>Si la branca destí <strong>no té commits propis</strong> des que es va separar la branca origen, Git només "mou el punter" cap endavant. No crea cap commit nou de merge.</p>
+    <pre><code>master   A───B
+              \\
+branca         C───D
+
+Després de "git merge branca" des de master:
+
+master   A───B───C───D  (només mou el HEAD endavant)</code></pre>
+  </div>
+
+  <div class="card info">
+    <div class="card-title">Merge amb 3 vies (3-way merge)</div>
+    <p>Quan les dues branques tenen commits propis, Git crea un <strong>commit de merge</strong> nou que combina les dues històries.</p>
+    <pre><code>master   A───B───E
+              \\       \\
+branca         C───D───M (commit de merge)</code></pre>
+  </div>
+</section>
+
+<!-- =================== CONFLICTES =================== -->
+<section id="conflictes" class="section">
+  <h2>Conflictes de merge</h2>
+  <p>Un <strong>conflicte</strong> es produeix quan dues branques han modificat <strong>les mateixes línies</strong> d'un mateix fitxer.</p>
+
+  <div class="card bad">
+    <div class="card-title">Cas pràctic (com a l'EAC3)</div>
+    <p><strong>master:</strong> tens <code>private int autonomia;</code></p>
+    <p><strong>branca_autonomia:</strong> canvies a <code>private double autonomia;</code></p>
+    <p><strong>branca_nom:</strong> canvies el mateix atribut a <code>private int tempsVolMaxim;</code></p>
+    <p>Quan intentes fusionar les dues branques a master, Git no sap quin canvi guardar i marca el conflicte.</p>
+  </div>
+
+  <h3>Com es veu un conflicte al fitxer</h3>
+  <pre><code><span class="com">// Dron.java</span>
+&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD
+    <span class="kw">private double</span> autonomia;
+=======
+    <span class="kw">private int</span> tempsVolMaxim;
+&gt;&gt;&gt;&gt;&gt;&gt;&gt; branca_nom</code></pre>
+
+  <ul>
+    <li><strong>HEAD</strong> = la versió de la branca actual (master)</li>
+    <li><strong>branca_nom</strong> = la versió que vols incorporar</li>
+    <li>Cal <strong>editar manualment</strong> el fitxer, decidir quin codi va i esborrar els marcadors <code>&lt;&lt;&lt;</code>, <code>===</code>, <code>&gt;&gt;&gt;</code></li>
+  </ul>
+
+  <h3>Procediment per resoldre</h3>
+  <ol>
+    <li><code>git status</code> per veure quins fitxers tenen conflicte.</li>
+    <li>Obre el fitxer i edita'l manualment.</li>
+    <li>Deixa només el codi que vols mantenir (potser una barreja dels dos).</li>
+    <li>Esborra els marcadors <code>&lt;&lt;&lt;</code>, <code>===</code>, <code>&gt;&gt;&gt;</code>.</li>
+    <li><code>git add &lt;fitxer&gt;</code> per marcar com a resolt.</li>
+    <li><code>git commit</code> per completar el merge.</li>
+  </ol>
+
+  <div class="card good">
+    <div class="card-title">Cas EAC3 — la solució "barreja"</div>
+    <p>Volies mantenir <strong>tots dos canvis</strong>: el tipus <code>double</code> de branca_autonomia I el nom <code>tempsVolMaxim</code> de branca_nom. La resolució manual seria:</p>
+    <pre><code>    <span class="kw">private double</span> tempsVolMaxim;</code></pre>
+    <p>Mostra que Git no decideix per tu — només marca el conflicte. La decisió és humana.</p>
+  </div>
+
+  <h3>Tipus de canvis que NO causen conflicte</h3>
+  <div class="card info">
+    <ul>
+      <li>Dues branques modifiquen <strong>línies diferents</strong> del mateix fitxer → Git fusiona automàticament.</li>
+      <li>Dues branques modifiquen <strong>fitxers diferents</strong> → cap problema.</li>
+      <li>Una branca afegeix un fitxer nou que no existeix a l'altra → s'afegeix tal com ve.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- =================== QUIZ =================== -->
+<section id="quiz" class="section">
+  <h2>Quiz — JUnit + Git (15 preguntes)</h2>
+
+  <div class="quiz">
+
+    <div class="q">
+      <div class="q-text">1. L'anotació <code>@Test</code> de JUnit serveix per:</div>
+      <div class="opts">
+        <button class="opt" data-opt="a" onclick="answer(this,'b','j1')">a) Generar la documentació del mètode</button>
+        <button class="opt" data-opt="b" onclick="answer(this,'b','j1')">b) Marcar el mètode com una prova que cal executar</button>
+        <button class="opt" data-opt="c" onclick="answer(this,'b','j1')">c) Saltar-se aquest mètode</button>
+        <button class="opt" data-opt="d" onclick="answer(this,'b','j1')">d) Compilar el mètode dues vegades</button>
+      </div>
+      <div class="explain" id="exp_j1">Cada mètode amb <code>@Test</code> serà executat per JUnit quan corris la suite.</div>
+    </div>
+
+    <div class="q">
+      <div class="q-text">2. Què comprova <code>assertEquals(5, x)</code>?</div>
+      <div class="opts">
+        <button class="opt" data-opt="a" onclick="answer(this,'b','j2')">a) Que x sigui més gran que 5</button>
+        <button class="opt" data-opt="b" onclick="answer(this,'b','j2')">b) Que x sigui exactament igual a 5</button>
+        <button class="opt" data-opt="c" onclick="answer(this,'b','j2')">c) Que x sigui null</button>
+        <button class="opt" data-opt="d" onclick="answer(this,'b','j2')">d) Que x sigui diferent de 5</button>
+      </div>
+      <div class="explain" id="exp_j2">Primer paràmetre = esperat, segon = real. Comprova igualtat estricta.</div>
+    </div>
+
+    <div class="q">
+      <div class="q-text">3. <code>@BeforeEach</code> s'executa:</div>
+      <div class="opts">
+        <button class="opt" data-opt="a" onclick="answer(this,'c','j3')">a) Una sola vegada al principi de tots els tests</button>
+        <button class="opt" data-opt="b" onclick="answer(this,'c','j3')">b) Una sola vegada al final</button>
+        <button class="opt" data-opt="c" onclick="answer(this,'c','j3')">c) Abans de cada test individual</button>
+        <button class="opt" data-opt="d" onclick="answer(this,'c','j3')">d) Només si un test falla</button>
+      </div>
+      <div class="explain" id="exp_j3">Permet inicialitzar variables abans de cada test, garantint que cada prova és independent. <code>@BeforeAll</code> és el que s'executa una vegada.</div>
+    </div>
+
+    <div class="q">
+      <div class="q-text">4. <code>assertThrows(IllegalArgumentException.class, () -> metode(-5))</code> passa si:</div>
+      <div class="opts">
+        <button class="opt" data-opt="a" onclick="answer(this,'b','j4')">a) El mètode retorna -5</button>
+        <button class="opt" data-opt="b" onclick="answer(this,'b','j4')">b) El mètode llança IllegalArgumentException</button>
+        <button class="opt" data-opt="c" onclick="answer(this,'b','j4')">c) El mètode no llança cap excepció</button>
+        <button class="opt" data-opt="d" onclick="answer(this,'b','j4')">d) El mètode retorna null</button>
+      </div>
+      <div class="explain" id="exp_j4">El test verifica que es llanci EXACTAMENT aquell tipus d'excepció. Si llança una altra, o no llança res, el test falla.</div>
+    </div>
+
+    <div class="q">
+      <div class="q-text">5. L'ordre per inicialitzar un repositori Git nou és:</div>
+      <div class="opts">
+        <button class="opt" data-opt="a" onclick="answer(this,'c','j5')">a) <code>git start</code></button>
+        <button class="opt" data-opt="b" onclick="answer(this,'c','j5')">b) <code>git create</code></button>
+        <button class="opt" data-opt="c" onclick="answer(this,'c','j5')">c) <code>git init</code></button>
+        <button class="opt" data-opt="d" onclick="answer(this,'c','j5')">d) <code>git new</code></button>
+      </div>
+      <div class="explain" id="exp_j5"><code>git init</code> crea el directori <code>.git/</code> a la carpeta actual.</div>
+    </div>
+
+    <div class="q">
+      <div class="q-text">6. Per saber quins fitxers tenen canvis pendents, l'ordre és:</div>
+      <div class="opts">
+        <button class="opt" data-opt="a" onclick="answer(this,'b','j6')">a) <code>git log</code></button>
+        <button class="opt" data-opt="b" onclick="answer(this,'b','j6')">b) <code>git status</code></button>
+        <button class="opt" data-opt="c" onclick="answer(this,'b','j6')">c) <code>git changes</code></button>
+        <button class="opt" data-opt="d" onclick="answer(this,'b','j6')">d) <code>git pending</code></button>
+      </div>
+      <div class="explain" id="exp_j6"><code>git status</code> mostra fitxers modificats, staged i untracked. <code>git log</code> mostra commits passats, no canvis actuals.</div>
+    </div>
+
+    <div class="q">
+      <div class="q-text">7. Què és el HEAD?</div>
+      <div class="opts">
+        <button class="opt" data-opt="a" onclick="answer(this,'c','j7')">a) El primer commit del repositori</button>
+        <button class="opt" data-opt="b" onclick="answer(this,'c','j7')">b) El títol del repositori</button>
+        <button class="opt" data-opt="c" onclick="answer(this,'c','j7')">c) La versió actual / l'últim commit de la branca actual</button>
+        <button class="opt" data-opt="d" onclick="answer(this,'c','j7')">d) Un fitxer de configuració</button>
+      </div>
+      <div class="explain" id="exp_j7">HEAD apunta sempre a on ets ara. Després d'un nou commit, HEAD avança a aquest nou commit.</div>
+    </div>
+
+    <div class="q">
+      <div class="q-text">8. Què és un conflicte de merge?</div>
+      <div class="opts">
+        <button class="opt" data-opt="a" onclick="answer(this,'b','j8')">a) Una discussió entre desenvolupadors</button>
+        <button class="opt" data-opt="b" onclick="answer(this,'b','j8')">b) Quan dues branques han modificat les mateixes línies d'un fitxer i Git no sap quina versió mantenir</button>
+        <button class="opt" data-opt="c" onclick="answer(this,'b','j8')">c) Un error de sintaxi al codi</button>
+        <button class="opt" data-opt="d" onclick="answer(this,'b','j8')">d) La pèrdua del repositori per fallada de maquinari</button>
+      </div>
+      <div class="explain" id="exp_j8">Cal resoldre'l manualment editant el fitxer i decidint quins canvis es queden.</div>
+    </div>
+
+    <div class="q">
+      <div class="q-text">9. El fitxer <code>.gitignore</code> serveix per:</div>
+      <div class="opts">
+        <button class="opt" data-opt="a" onclick="answer(this,'b','j9')">a) Configurar el nom del repositori</button>
+        <button class="opt" data-opt="b" onclick="answer(this,'b','j9')">b) Indicar a Git quins fitxers o patrons no s'han de rastrejar</button>
+        <button class="opt" data-opt="c" onclick="answer(this,'b','j9')">c) Llistar els commits ignorats</button>
+        <button class="opt" data-opt="d" onclick="answer(this,'b','j9')">d) Bloquejar els merges</button>
+      </div>
+      <div class="explain" id="exp_j9">S'hi posen patrons com <code>*.class</code>, <code>target/</code>, <code>.DS_Store</code> per evitar pujar binaris o configs locals.</div>
+    </div>
+
+    <div class="q">
+      <div class="q-text">10. Per crear i situar-se a una branca nova alhora:</div>
+      <div class="opts">
+        <button class="opt" data-opt="a" onclick="answer(this,'c','j10')">a) <code>git branch nova</code></button>
+        <button class="opt" data-opt="b" onclick="answer(this,'c','j10')">b) <code>git merge nova</code></button>
+        <button class="opt" data-opt="c" onclick="answer(this,'c','j10')">c) <code>git checkout -b nova</code></button>
+        <button class="opt" data-opt="d" onclick="answer(this,'c','j10')">d) <code>git init nova</code></button>
+      </div>
+      <div class="explain" id="exp_j10"><code>git branch</code> sense <code>-b</code> només crea, no mou. <code>checkout -b</code> fa les dues coses.</div>
+    </div>
+
+    <div class="q">
+      <div class="q-text">11. Quan Git fa un merge "fast-forward":</div>
+      <div class="opts">
+        <button class="opt" data-opt="a" onclick="answer(this,'c','j11')">a) Crea un commit de merge nou</button>
+        <button class="opt" data-opt="b" onclick="answer(this,'c','j11')">b) Demana confirmació interactiva</button>
+        <button class="opt" data-opt="c" onclick="answer(this,'c','j11')">c) Només mou el punter de la branca cap endavant, sense commit nou</button>
+        <button class="opt" data-opt="d" onclick="answer(this,'c','j11')">d) Sempre produeix un conflicte</button>
+      </div>
+      <div class="explain" id="exp_j11">Passa quan la branca destí no té commits propis des que es va separar. És el merge més senzill possible.</div>
+    </div>
+
+    <div class="q">
+      <div class="q-text">12. Què fa <code>git add .</code>?</div>
+      <div class="opts">
+        <button class="opt" data-opt="a" onclick="answer(this,'b','j12')">a) Crea un commit</button>
+        <button class="opt" data-opt="b" onclick="answer(this,'b','j12')">b) Afegeix tots els fitxers modificats a l'àrea de staging</button>
+        <button class="opt" data-opt="c" onclick="answer(this,'b','j12')">c) Esborra tots els fitxers no rastrejats</button>
+        <button class="opt" data-opt="d" onclick="answer(this,'b','j12')">d) Connecta amb un repositori remot</button>
+      </div>
+      <div class="explain" id="exp_j12">El punt vol dir "tots els fitxers de la carpeta actual i subcarpetes". <code>git add</code> mai crea commits, només prepara fitxers per al commit.</div>
+    </div>
+
+    <div class="q">
+      <div class="q-text">13. En un fitxer amb conflicte, els marcadors <code>&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD</code> indiquen:</div>
+      <div class="opts">
+        <button class="opt" data-opt="a" onclick="answer(this,'c','j13')">a) Una línia que Git ha esborrat</button>
+        <button class="opt" data-opt="b" onclick="answer(this,'c','j13')">b) Un comentari en HTML</button>
+        <button class="opt" data-opt="c" onclick="answer(this,'c','j13')">c) L'inici de la versió de la branca actual (la que ja teníem)</button>
+        <button class="opt" data-opt="d" onclick="answer(this,'c','j13')">d) El final del fitxer</button>
+      </div>
+      <div class="explain" id="exp_j13">Després de <code>&lt;&lt;&lt; HEAD</code> i fins a <code>===</code> hi ha la teva versió. De <code>===</code> a <code>&gt;&gt;&gt;</code> hi ha la versió de l'altra branca.</div>
+    </div>
+
+    <div class="q">
+      <div class="q-text">14. Què fa <code>assertNotNull(obj)</code>?</div>
+      <div class="opts">
+        <button class="opt" data-opt="a" onclick="answer(this,'c','j14')">a) Comprova que obj sigui null</button>
+        <button class="opt" data-opt="b" onclick="answer(this,'c','j14')">b) Comprova que obj sigui buit</button>
+        <button class="opt" data-opt="c" onclick="answer(this,'c','j14')">c) Comprova que obj NO sigui null</button>
+        <button class="opt" data-opt="d" onclick="answer(this,'c','j14')">d) Crea l'objecte si és null</button>
+      </div>
+      <div class="explain" id="exp_j14">Si obj és null, el test falla. Útil per verificar que un constructor o factory mètode realment crea un objecte.</div>
+    </div>
+
+    <div class="q">
+      <div class="q-text">15. La branca principal d'un projecte Git tradicional s'anomena:</div>
+      <div class="opts">
+        <button class="opt" data-opt="a" onclick="answer(this,'d','j15')">a) root</button>
+        <button class="opt" data-opt="b" onclick="answer(this,'d','j15')">b) base</button>
+        <button class="opt" data-opt="c" onclick="answer(this,'d','j15')">c) trunk</button>
+        <button class="opt" data-opt="d" onclick="answer(this,'d','j15')">d) master o main</button>
+      </div>
+      <div class="explain" id="exp_j15">Tradicionalment "master". Els repositoris moderns sovint l'anomenen "main" com a alternativa.</div>
+    </div>
+
+  </div>
+</section>
+
+<div id="tracker" class="tracker"></div>
+<script src="shared.js"></script>
+</body>
+</html>

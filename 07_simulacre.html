@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>07 · Simulacre PAF — Repàs M0487</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header>
+  <h1>🎯 Simulacre PAF</h1>
+  <a class="back" href="index.html">← Índex</a>
+</header>
+
+<div class="tabs">
+  <button class="tab" onclick="showTab('intro', this)">Instruccions</button>
+  <button class="tab" onclick="showTab('sim1', this)">Simulacre 1</button>
+  <button class="tab" onclick="showTab('sim2', this)">Simulacre 2</button>
+  <button class="tab" onclick="showTab('random', this)">Repàs aleatori</button>
+</div>
+
+<!-- =================== INTRO =================== -->
+<section id="intro" class="section">
+  <div class="hero">
+    <h2>Funcionament del simulacre</h2>
+    <p class="lead">Aquests quizzes <strong>SÍ</strong> apliquen la puntuació real de l'IOC al tracker (cantonada inferior dreta). Així pots veure si arribaries a aprovar.</p>
+  </div>
+
+  <h3>Fórmula IOC</h3>
+  <table>
+    <tr><th>Resultat</th><th>Puntuació</th></tr>
+    <tr><td>✓ Encert</td><td><strong>+0,5 punts</strong></td></tr>
+    <tr><td>✗ Errada</td><td><strong>−0,125 punts</strong></td></tr>
+    <tr><td>— En blanc</td><td><strong>0 punts</strong></td></tr>
+  </table>
+
+  <div class="card warn">
+    <div class="card-title">⚠️ Estratègia òptima</div>
+    <p>Si tens <strong>més del 25%</strong> de probabilitat d'encertar una pregunta, val la pena respondre.<br>
+       Si tens dubtes seriosos entre 3 o 4 opcions, és millor deixar-la en blanc.</p>
+    <p>Matemàticament: 4 opcions a l'atzar → 1 de cada 4 OK (+0,5) i 3 de cada 4 KO (3 × -0,125 = -0,375). Valor esperat = +0,125 per pregunta. Hi ha un lleuger avantatge en respondre a l'atzar, però només si vas en cec total.</p>
+  </div>
+
+  <div class="card info">
+    <div class="card-title">Recomanació</div>
+    <ol>
+      <li>Fes el <strong>Simulacre 1</strong> primer.</li>
+      <li>Reinicia la puntuació amb el botó del tracker.</li>
+      <li>Fes el <strong>Simulacre 2</strong>.</li>
+      <li>Per practicar més, ves a <strong>Repàs aleatori</strong> per veure 20 preguntes barrejades.</li>
+    </ol>
+  </div>
+</section>
+
+<!-- =================== SIMULACRE 1 =================== -->
+<section id="sim1" class="section">
+  <h2>Simulacre 1 — 10 preguntes mixtes</h2>
+  <p style="color:var(--text-dim);font-size:0.9rem;">Format real de la PAF. Cada pregunta té 4 opcions + l'opció de deixar-la en blanc.</p>
+
+  <div class="quiz">
+
+    <div class="q">
+      <div class="q-text">1. A UML, la composició es representa amb:</div>
+      <div class="opts">
+        <button class="opt" data-opt="a" onclick="answer(this,'b','s1q1',true)">a) Un rombe buit</button>
+        <button class="opt" data-opt="b" onclick="answer(this,'b','s1q1',true)">b) Un rombe ple</button>
+        <button class="opt" data-opt="c" onclick="answer(this,'b','s1q1',true)">c) Una fletxa triangular buida</button>
+        <button class="opt" data-opt="d" onclick="answer(this,'b','s1q1',true)">d) Una línia discontínua</button>
+        <button class="opt blank-btn" onclick="blank(this,'b','s1q1')">— Deixar en blanc</button>
+      </div>
+      <div class="explain" id="exp_s1q1">Composició = rombe ple. Indica vinculació forta (la part no existeix sense el tot).</div>
+    </div>
+
+    <div class="q">
+      <div class="q-text">2. Quin element NO forma part de la programació estructurada?</div>
+      <div class="opts">
+        <button class="opt" data-opt="a" onclick="answer(this,'d','s1q2',true)">a) Seqüència</button>
+        <button class="opt" data-opt="b" onclick="answer(this,'d','s1q2',true)">b) Selecció</button>
+        <button class="opt" data-opt="c" onclick="answer(this,'d','s1q2',true)">c) Iteració</button>
+        <button class="opt" data-opt="d" onclick="answer(this,'d','s1q2',true)">d) GOTO</button>
+        <button class="opt blank-btn" onclick="blank(this,'d','s1q2')">— Deixar en blanc</button>
+      </div>
+      <div class="explain" id="exp_s1q2">Böhm-Jacopini: només seqüència, selecció i iteració. GOTO és precisament el que la programació estructurada va eliminar.</div>
+    </div>
+
+    <div class="q">
+      <div class="q-text">3. <code>@GetMapping("/dada")</code> a Spring Boot:</div>
+      <div class="opts">
+        <button class="opt" data-opt="a" onclick="answer(this,'c','s1q3',true)">a) Crea un nou bean</button>
+        <button class="opt" data-opt="b" onclick="answer(this,'c','s1q3',true)">b) Connecta amb la base de dades</button>
+        <button class="opt" data-opt="c" onclick="answer(this,'c','s1q3',true)">c) Mapeja peticions HTTP GET a /dada a aquest mètode</button>
+        <button class="opt" data-opt="d" onclick="answer(this,'c','s1q3',true)">d) Crea una taula a la BD</button>
+        <button class="opt blank-btn" onclick="blank(this,'c','s1q3')">— Deixar en blanc</button>
+      </div>
+      <div class="explain" id="exp_s1q3">Spring veu l'anotació i registra el mètode com a handler per a GET /dada.</div>
+    </div>
+
+    <div class="q">
+      <div class="q-text">4. La complexitat ciclomàtica d'un mètode amb 3 ifs anidats és:</div>
+      <div class="opts">
+        <button class="opt" data-opt="a" onclick="answer(this,'c','s1q4',true)">a) 1</button>
+        <button class="opt" data-opt="b" onclick="answer(this,'c','s1q4',true)">b) 3</button>
+        <button class="opt" data-opt="c" onclick="answer(this,'c','s1q4',true)">c) 4</button>
+        <button class="opt" data-opt="d" onclick="answer(this,'c','s1q4',true)">d) 6</button>
+        <button class="opt blank-btn" onclick="blank(this,'c','s1q4')">— Deixar en blanc</button>
+      </div>
+      <div class="explain" id="exp_s1q4">3 punts de decisió + 1 = 4.</div>
+    </div>
+
+    <div class="q">
+      <div class="q-text">5. <code>git checkout -b feature</code> fa:</div>
+      <div class="opts">
+        <button class="opt" data-opt="a" onclick="answer(this,'b','s1q5',true)">a) Esborra la branca feature</button>
+        <button class="opt" data-opt="b" onclick="answer(this,'b','s1q5',true)">b) Crea la branca feature i s'hi mou</button>
+        <button class="opt" data-opt="c" onclick="answer(this,'b','s1q5',true)">c) Fusiona feature a master</button>
+        <button class="opt" data-opt="d" onclick="answer(this,'b','s1q5',true)">d) Llista totes les branques</button>
+        <button class="opt blank-btn" onclick="blank(this,'b','s1q5')">— Deixar en blanc</button>
+      </div>
+      <div class="explain" id="exp_s1q5">L'opció <code>-b</code> crea la branca, i <code>checkout</code> hi canvia. Atall de dues ordres en una.</div>
+    </div>
+
+    <div class="q">
+      <div class="q-text">6. En un diagrama de classes, "Persona té entre 1 i 3 cotxes":</div>
+      <div class="opts">
+        <button class="opt" data-opt="a" onclick="answer(this,'c','s1q6',true)">a) Persona <code>1..3</code> ──── <code>1</code> Cotxe</button>
+        <button class="opt" data-opt="b" onclick="answer(this,'c','s1q6',true)">b) Persona <code>3</code> ──── <code>*</code> Cotxe</button>
+        <button class="opt" data-opt="c" onclick="answer(this,'c','s1q6',true)">c) Persona <code>1</code> ──── <code>1..3</code> Cotxe</button>
+        <button class="opt" data-opt="d" onclick="answer(this,'c','s1q6',true)">d) Persona <code>*</code> ──── <code>1..3</code> Cotxe</button>
+        <button class="opt blank-btn" onclick="blank(this,'c','s1q6')">— Deixar en blanc</button>
+      </div>
+      <div class="explain" id="exp_s1q6">La cardinalitat va a l'extrem oposat. "Persona té entre 1 i 3 cotxes" → 1..3 va al costat de Cotxe.</div>
+    </div>
+
+    <div class="q">
+      <div class="q-text">7. Quin patró de refacció s'usa per eliminar un número màgic?</div>
+      <div class="opts">
+        <button class="opt" data-opt="a" onclick="answer(this,'b','s1q7',true)">a) Extreure mètode</button>
+        <button class="opt" data-opt="b" onclick="answer(this,'b','s1q7',true)">b) Extreure constant</button>
+        <button class="opt" data-opt="c" onclick="answer(this,'b','s1q7',true)">c) Reanomenar</button>
+        <button class="opt" data-opt="d" onclick="answer(this,'b','s1q7',true)">d) Moure</button>
+        <button class="opt blank-btn" onclick="blank(this,'b','s1q7')">— Deixar en blanc</button>
+      </div>
+      <div class="explain" id="exp_s1q7">Substituir el literal numèric per una constant amb nom descriptiu.</div>
+    </div>
+
+    <div class="q">
+      <div class="q-text">8. Què comprova <code>assertThrows(IOException.class, () -> readFile())</code>?</div>
+      <div class="opts">
+        <button class="opt" data-opt="a" onclick="answer(this,'c','s1q8',true)">a) Que el fitxer existeixi</button>
+        <button class="opt" data-opt="b" onclick="answer(this,'c','s1q8',true)">b) Que readFile retorni null</button>
+        <button class="opt" data-opt="c" onclick="answer(this,'c','s1q8',true)">c) Que readFile llanci una IOException</button>
+        <button class="opt" data-opt="d" onclick="answer(this,'c','s1q8',true)">d) Que readFile tardi menys d'1 segon</button>
+        <button class="opt blank-btn" onclick="blank(this,'c','s1q8')">— Deixar en blanc</button>
+      </div>
+      <div class="explain" id="exp_s1q8">El test passa si i només si el codi dins la lambda llança exactament aquesta excepció.</div>
+    </div>
+
+    <div class="q">
+      <div class="q-text">9. A un diagrama d'estats, què representa la transició <code>arribar [bateria&gt;50] / iluminar</code>?</div>
+      <div class="opts">
+        <button class="opt" data-opt="a" onclick="answer(this,'c','s1q9',true)">a) Tres estats diferents</button>
+        <button class="opt" data-opt="b" onclick="answer(this,'c','s1q9',true)">b) Una herència</button>
+        <button class="opt" data-opt="c" onclick="answer(this,'c','s1q9',true)">c) Esdeveniment "arribar", amb condició bateria>50, executa l'acció "iluminar"</button>
+        <button class="opt" data-opt="d" onclick="answer(this,'c','s1q9',true)">d) Un missatge asíncron</button>
+        <button class="opt blank-btn" onclick="blank(this,'c','s1q9')">— Deixar en blanc</button>
+      </div>
+      <div class="explain" id="exp_s1q9">Format estàndard: <code>esdeveniment [guard] / acció</code>.</div>
+    </div>
+
+    <div class="q">
+      <div class="q-text">10. Java compila a bytecode perquè:</div>
+      <div class="opts">
+        <button class="opt" data-opt="a" onclick="answer(this,'c','s1q10',true)">a) És més ràpid que codi natiu</button>
+        <button class="opt" data-opt="b" onclick="answer(this,'c','s1q10',true)">b) No té compilador</button>
+        <button class="opt" data-opt="c" onclick="answer(this,'c','s1q10',true)">c) Així el mateix .class corre a qualsevol SO amb JVM</button>
+        <button class="opt" data-opt="d" onclick="answer(this,'c','s1q10',true)">d) Per estalviar memòria</button>
+        <button class="opt blank-btn" onclick="blank(this,'c','s1q10')">— Deixar en blanc</button>
+      </div>
+      <div class="explain" id="exp_s1q10">"Write once, run anywhere". El bytecode és independent del SO.</div>
+    </div>
+
+  </div>
+
+  <div class="card info" style="margin-top:20px;">
+    <div class="card-title">Quan acabis</div>
+    <p>Mira el tracker. Si has tret <strong>≥ 3 punts</strong> (sobre 5 màxim) ja anaves a aprovar la part test. Si has tret <strong>≥ 4 punts</strong>, vas molt bé.</p>
+    <p>Per al simulacre 2: <strong>reinicia la puntuació</strong> amb el botó vermell del tracker.</p>
+  </div>
+</section>
+
+<!-- =================== SIMULACRE 2 =================== -->
+<section id="sim2" class="section">
+  <h2>Simulacre 2 — 10 preguntes mixtes</h2>
+  <p style="color:var(--text-dim);font-size:0.9rem;">Reinicia primer la puntuació amb el botó del tracker.</p>
+
+  <div class="quiz">
+
+    <div class="q">
+      <div class="q-text">1. La sobreescriptura (override) es diferencia de la sobrecàrrega (overload) en que:</div>
+      <div class="opts">
+        <button class="opt" data-opt="a" onclick="answer(this,'b','s2q1',true)">a) Es resol en compilació</button>
+        <button class="opt" data-opt="b" onclick="answer(this,'b','s2q1',true)">b) Manté la mateixa signatura del mètode pare</button>
+        <button class="opt" data-opt="c" onclick="answer(this,'b','s2q1',true)">c) Pot tenir diferents tipus de retorn</button>
+        <button class="opt" data-opt="d" onclick="answer(this,'b','s2q1',true)">d) Requereix sobrecàrrega prèvia</button>
+        <button class="opt blank-btn" onclick="blank(this,'b','s2q1')">— Deixar en blanc</button>
+      </div>
+      <div class="explain" id="exp_s2q1">Override: mateixa signatura, classe filla redefineix el comportament. Overload: mateix nom, paràmetres diferents.</div>
+    </div>
+
+    <div class="q">
+      <div class="q-text">2. A UML, la fletxa triangular buida representa:</div>
+      <div class="opts">
+        <button class="opt" data-opt="a" onclick="answer(this,'c','s2q2',true)">a) Una agregació</button>
+        <button class="opt" data-opt="b" onclick="answer(this,'c','s2q2',true)">b) Una composició</button>
+        <button class="opt" data-opt="c" onclick="answer(this,'c','s2q2',true)">c) Una herència (generalització)</button>
+        <button class="opt" data-opt="d" onclick="answer(this,'c','s2q2',true)">d) Una dependència</button>
+        <button class="opt blank-btn" onclick="blank(this,'c','s2q2')">— Deixar en blanc</button>
+      </div>
+      <div class="explain" id="exp_s2q2">La fletxa triangular buida apunta de la filla a la pare en una relació d'herència.</div>
+    </div>
+
+    <div class="q">
+      <div class="q-text">3. La fórmula més pràctica de la complexitat ciclomàtica és:</div>
+      <div class="opts">
+        <button class="opt" data-opt="a" onclick="answer(this,'b','s2q3',true)">a) Línies de codi / 10</button>
+        <button class="opt" data-opt="b" onclick="answer(this,'b','s2q3',true)">b) Punts de decisió + 1</button>
+        <button class="opt" data-opt="c" onclick="answer(this,'b','s2q3',true)">c) Nombre de mètodes × 2</button>
+        <button class="opt" data-opt="d" onclick="answer(this,'b','s2q3',true)">d) Línies executades en una traça</button>
+        <button class="opt blank-btn" onclick="blank(this,'b','s2q3')">— Deixar en blanc</button>
+      </div>
+      <div class="explain" id="exp_s2q3">Forma equivalent a aristes-nodes+2 però molt més fàcil de comptar.</div>
+    </div>
+
+    <div class="q">
+      <div class="q-text">4. <code>private static final double IVA = 0.21;</code> és un exemple de:</div>
+      <div class="opts">
+        <button class="opt" data-opt="a" onclick="answer(this,'b','s2q4',true)">a) Extracció de mètode</button>
+        <button class="opt" data-opt="b" onclick="answer(this,'b','s2q4',true)">b) Extracció de constant</button>
+        <button class="opt" data-opt="c" onclick="answer(this,'b','s2q4',true)">c) Reanomenament</button>
+        <button class="opt" data-opt="d" onclick="answer(this,'b','s2q4',true)">d) Encapsulació</button>
+        <button class="opt blank-btn" onclick="blank(this,'b','s2q4')">— Deixar en blanc</button>
+      </div>
+      <div class="explain" id="exp_s2q4">Donar nom a un valor numèric el converteix en una constant amb significat.</div>
+    </div>
+
+    <div class="q">
+      <div class="q-text">5. <code>combo.getSelectedIndex() == -1</code> a Swing significa:</div>
+      <div class="opts">
+        <button class="opt" data-opt="a" onclick="answer(this,'c','s2q5',true)">a) El combo està deshabilitat</button>
+        <button class="opt" data-opt="b" onclick="answer(this,'c','s2q5',true)">b) Es selecciona l'últim element</button>
+        <button class="opt" data-opt="c" onclick="answer(this,'c','s2q5',true)">c) L'usuari no ha seleccionat res</button>
+        <button class="opt" data-opt="d" onclick="answer(this,'c','s2q5',true)">d) El combo té 1 sol element</button>
+        <button class="opt blank-btn" onclick="blank(this,'c','s2q5')">— Deixar en blanc</button>
+      </div>
+      <div class="explain" id="exp_s2q5">Quan no hi ha selecció, getSelectedIndex retorna -1.</div>
+    </div>
+
+    <div class="q">
+      <div class="q-text">6. Les classes d'equivalència s'utilitzen en proves de:</div>
+      <div class="opts">
+        <button class="opt" data-opt="a" onclick="answer(this,'b','s2q6',true)">a) Caixa blanca</button>
+        <button class="opt" data-opt="b" onclick="answer(this,'b','s2q6',true)">b) Caixa negra</button>
+        <button class="opt" data-opt="c" onclick="answer(this,'b','s2q6',true)">c) Rendiment</button>
+        <button class="opt" data-opt="d" onclick="answer(this,'b','s2q6',true)">d) Seguretat</button>
+        <button class="opt blank-btn" onclick="blank(this,'b','s2q6')">— Deixar en blanc</button>
+      </div>
+      <div class="explain" id="exp_s2q6">Es basa només en l'especificació d'entrades/sortides, no en l'estructura interna del codi.</div>
+    </div>
+
+    <div class="q">
+      <div class="q-text">7. En un diagrama de seqüència, l'eix temporal és:</div>
+      <div class="opts">
+        <button class="opt" data-opt="a" onclick="answer(this,'b','s2q7',true)">a) Horitzontal, d'esquerra a dreta</button>
+        <button class="opt" data-opt="b" onclick="answer(this,'b','s2q7',true)">b) Vertical, de dalt a baix</button>
+        <button class="opt" data-opt="c" onclick="answer(this,'b','s2q7',true)">c) Diagonal</button>
+        <button class="opt" data-opt="d" onclick="answer(this,'b','s2q7',true)">d) No hi ha eix temporal</button>
+        <button class="opt blank-btn" onclick="blank(this,'b','s2q7')">— Deixar en blanc</button>
+      </div>
+      <div class="explain" id="exp_s2q7">Els missatges més antics estan a dalt, els més recents a baix. El de comunicació, en canvi, no té eix temporal — usa numeració.</div>
+    </div>
+
+    <div class="q">
+      <div class="q-text">8. Les proves de regressió serveixen per:</div>
+      <div class="opts">
+        <button class="opt" data-opt="a" onclick="answer(this,'c','s2q8',true)">a) Validar requisits amb el client</button>
+        <button class="opt" data-opt="b" onclick="answer(this,'c','s2q8',true)">b) Mesurar el rendiment</button>
+        <button class="opt" data-opt="c" onclick="answer(this,'c','s2q8',true)">c) Detectar nous errors apareguts després de canvis o millores al codi</button>
+        <button class="opt" data-opt="d" onclick="answer(this,'c','s2q8',true)">d) Inicialitzar el repositori</button>
+        <button class="opt blank-btn" onclick="blank(this,'c','s2q8')">— Deixar en blanc</button>
+      </div>
+      <div class="explain" id="exp_s2q8">"Regressió" = retrocés. Cada vegada que toques codi, executes la bateria de tests per assegurar-te que no has trencat res que funcionava.</div>
+    </div>
+
+    <div class="q">
+      <div class="q-text">9. <code>git merge feature</code> des de master, si feature té commits nous i master també, resulta en:</div>
+      <div class="opts">
+        <button class="opt" data-opt="a" onclick="answer(this,'b','s2q9',true)">a) Un fast-forward</button>
+        <button class="opt" data-opt="b" onclick="answer(this,'b','s2q9',true)">b) Un commit de merge (3-way merge), possiblement amb conflictes</button>
+        <button class="opt" data-opt="c" onclick="answer(this,'b','s2q9',true)">c) L'esborrat de feature</button>
+        <button class="opt" data-opt="d" onclick="answer(this,'b','s2q9',true)">d) Cap canvi</button>
+        <button class="opt blank-btn" onclick="blank(this,'b','s2q9')">— Deixar en blanc</button>
+      </div>
+      <div class="explain" id="exp_s2q9">Fast-forward només es pot fer si la branca destí no té commits propis. Aquí Git crea un nou commit que té dos pares (un de cada branca).</div>
+    </div>
+
+    <div class="q">
+      <div class="q-text">10. A Mètrica 3, la fase on s'analitzen els requisits i es decideix QUÈ ha de fer el sistema és:</div>
+      <div class="opts">
+        <button class="opt" data-opt="a" onclick="answer(this,'d','s2q10',true)">a) Implantació</button>
+        <button class="opt" data-opt="b" onclick="answer(this,'d','s2q10',true)">b) Manteniment</button>
+        <button class="opt" data-opt="c" onclick="answer(this,'d','s2q10',true)">c) Estudi de viabilitat</button>
+        <button class="opt" data-opt="d" onclick="answer(this,'d','s2q10',true)">d) Anàlisi del sistema d'informació</button>
+        <button class="opt blank-btn" onclick="blank(this,'d','s2q10')">— Deixar en blanc</button>
+      </div>
+      <div class="explain" id="exp_s2q10">Anàlisi = QUÈ. Disseny = COM (especificació detallada). Atenció: l'EAC2 té una pregunta similar amb resposta "Disseny" referint-se a "especificació detallada" — llegeix l'enunciat amb cura.</div>
+    </div>
+
+  </div>
+</section>
+
+<!-- =================== ALEATORI =================== -->
+<section id="random" class="section">
+  <h2>Repàs aleatori — 20 preguntes</h2>
+  <p style="color:var(--text-dim);font-size:0.9rem;">Cada vegada que recarregues la pàgina, l'ordre canvia. Bo per repassar.</p>
+
+  <div id="random-container" class="quiz">
+    <p style="color:var(--text-dim);">Carregant preguntes...</p>
+  </div>
+
+  <script>
+    // Banc de preguntes per al repàs aleatori
+    const banc = [
+      {
+        q: "Una agregació en UML es representa amb...",
+        opts: ["Rombe ple", "Rombe buit", "Fletxa triangular", "Línia discontínua"],
+        correct: 1,
+        exp: "Rombe buit. El ple seria composició."
+      },
+      {
+        q: "El pilar de la POO que amaga les dades internes d'una classe és...",
+        opts: ["Herència", "Encapsulació", "Polimorfisme", "Abstracció"],
+        correct: 1,
+        exp: "Encapsulació = ocultació + accés controlat (getters/setters)."
+      },
+      {
+        q: "El llenguatge assemblador és de quina generació?",
+        opts: ["Primera", "Segona", "Tercera", "Quarta"],
+        correct: 1,
+        exp: "2G: mnemotècnics (MOV, ADD, JMP). La 1G és binari pur."
+      },
+      {
+        q: "Quin patró de refacció converteix codi duplicat en un mètode reutilitzable?",
+        opts: ["Extreure constant", "Reanomenar", "Extreure mètode", "Moure"],
+        correct: 2,
+        exp: "Extract Method és la tècnica clàssica contra el codi duplicat."
+      },
+      {
+        q: "Què retorna combo.getSelectedIndex() quan no hi ha res seleccionat?",
+        opts: ["0", "-1", "null", "Excepció"],
+        correct: 1,
+        exp: "-1 indica que no hi ha cap element seleccionat."
+      },
+      {
+        q: "L'anotació @BeforeEach a JUnit s'executa...",
+        opts: ["Una vegada al principi", "Abans de cada test", "Després de cada test", "Mai automàticament"],
+        correct: 1,
+        exp: "Abans de cada @Test — útil per reinicialitzar estat entre proves."
+      },
+      {
+        q: "Quin paradigma usa funcions matemàtiques pures sense efectes secundaris?",
+        opts: ["Imperatiu", "Funcional", "Lògic", "OO"],
+        correct: 1,
+        exp: "Funcional: una funció amb la mateixa entrada dóna sempre la mateixa sortida."
+      },
+      {
+        q: "git status mostra...",
+        opts: ["L'historial de commits", "Fitxers modificats, staged i untracked", "Les branques remotes", "Els conflictes resolts"],
+        correct: 1,
+        exp: "git log seria l'historial. git status és l'estat actual de la carpeta."
+      },
+      {
+        q: "Una transició d'estat amb format 'click [actiu] / encendre' significa...",
+        opts: ["3 estats diferents", "Esdeveniment 'click' amb condició 'actiu' que executa 'encendre'", "Una herència múltiple", "Un missatge asíncron"],
+        correct: 1,
+        exp: "Format UML estàndard: esdeveniment [guard] / acció."
+      },
+      {
+        q: "Quin element NO és típic de la programació estructurada?",
+        opts: ["Seqüència", "Selecció", "Iteració", "GOTO"],
+        correct: 3,
+        exp: "Böhm-Jacopini: només cal seqüència + selecció + iteració."
+      },
+      {
+        q: "@RestController es diferencia de @Controller a Spring en que...",
+        opts: ["Només permet GET", "Retorna les dades directament (JSON/text), no noms de vistes", "Necessita Tomcat extern", "No suporta paràmetres"],
+        correct: 1,
+        exp: "Per APIs REST. El @Controller normal renderitza plantilles HTML."
+      },
+      {
+        q: "Si V(G) = 4, quantes proves cal com a mínim?",
+        opts: ["1", "2", "4", "8"],
+        correct: 2,
+        exp: "V(G) és exactament el nombre mínim de camins a cobrir."
+      },
+      {
+        q: "Els valors límit es proven per detectar errors típics com...",
+        opts: ["Errors de compilació", "Confondre < amb <= o > amb >=", "Errors de connexió a BD", "Memòria insuficient"],
+        correct: 1,
+        exp: "Provar el valor límit, just per sota i just per sobre detecta aquests errors clàssics."
+      },
+      {
+        q: "git merge fa fast-forward quan...",
+        opts: ["La branca destí no té commits propis des de la separació", "Es treballa sol al projecte", "Hi ha conflictes", "Es treballa amb GitHub"],
+        correct: 0,
+        exp: "Fast-forward = només moure el punter, sense crear commit nou."
+      },
+      {
+        q: "Quina ordre Git afegeix TOTS els fitxers modificats a staging?",
+        opts: ["git stage all", "git push --all", "git add .", "git commit -a"],
+        correct: 2,
+        exp: "El punt vol dir 'tot el directori actual'."
+      },
+      {
+        q: "JComboBox és...",
+        opts: ["Un botó", "Una caixa de text", "Un desplegable", "Una finestra"],
+        correct: 2,
+        exp: "Permet seleccionar un element d'una llista desplegable."
+      },
+      {
+        q: "Quina d'aquestes és una pràctica de caixa BLANCA?",
+        opts: ["Classes d'equivalència", "Valors límit", "Complexitat ciclomàtica", "Pruebes d'usabilitat"],
+        correct: 2,
+        exp: "Requereix mirar el codi font per identificar nodes i branques."
+      },
+      {
+        q: "El text d'ajut que apareix en passar el ratolí sobre un component es configura amb...",
+        opts: ["setHelp()", "setToolTipText()", "setHint()", "setLabel()"],
+        correct: 1,
+        exp: "Mètode estàndard de Swing per a tooltips."
+      },
+      {
+        q: "@PathVariable a Spring captura...",
+        opts: ["Paràmetres ?key=value de la URL", "Fragments dinàmics de la URL com /user/{id}", "Headers HTTP", "Cookies"],
+        correct: 1,
+        exp: "Per /user/?id=5 → @RequestParam. Per /user/5 → @PathVariable."
+      },
+      {
+        q: "Quina és l'ordre correcte: requestFocus() i selectAll() en una validació d'errors?",
+        opts: ["Primer selectAll, després requestFocus", "Primer requestFocus, després selectAll", "Indiferent", "Es criden en paral·lel"],
+        correct: 1,
+        exp: "Si fas selectAll primer i després requestFocus, perds la selecció. L'ordre correcte és focus → selecció."
+      },
+      {
+        q: "Què passa amb un .gitignore que afegeix un fitxer ja committejat?",
+        opts: ["L'esborra del repositori automàticament", "No té efecte; cal fer git rm --cached", "Genera un error", "Crea un commit nou"],
+        correct: 1,
+        exp: "El .gitignore només afecta fitxers no rastrejats. Un cop un fitxer està al repositori, cal treure'l manualment."
+      },
+      {
+        q: "Quina anotació Javadoc documenta un paràmetre?",
+        opts: ["@arg", "@param", "@input", "@var"],
+        correct: 1,
+        exp: "Format: @param nomParam Descripció breu."
+      }
+    ];
+
+    // Renderitza preguntes aleatòries
+    document.addEventListener('DOMContentLoaded', () => {
+      const container = document.getElementById('random-container');
+      const seleccio = shuffle(banc).slice(0, 20);
+      container.innerHTML = '';
+
+      seleccio.forEach((p, idx) => {
+        const id = 'rnd' + idx;
+        const opcionsShuffle = shuffle(p.opts.map((text, i) => ({ text, esCorrect: i === p.correct })));
+        const correctLetter = ['a', 'b', 'c', 'd'][opcionsShuffle.findIndex(o => o.esCorrect)];
+
+        let html = `<div class="q"><div class="q-text">${idx + 1}. ${p.q}</div><div class="opts">`;
+        opcionsShuffle.forEach((opt, i) => {
+          const letter = ['a', 'b', 'c', 'd'][i];
+          html += `<button class="opt" data-opt="${letter}" onclick="answer(this,'${correctLetter}','${id}',true)">${letter}) ${opt.text}</button>`;
+        });
+        html += `<button class="opt blank-btn" onclick="blank(this,'${correctLetter}','${id}')">— Deixar en blanc</button>`;
+        html += `</div><div class="explain" id="exp_${id}">${p.exp}</div></div>`;
+        container.innerHTML += html;
+      });
+    });
+  </script>
+</section>
+
+<div id="tracker" class="tracker"></div>
+<script src="shared.js"></script>
+</body>
+</html>

@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>01 · Diagrames UML — Repàs PAF M0487</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header>
+  <h1>01 · Diagrames UML</h1>
+  <a class="back" href="index.html">← Índex</a>
+</header>
+
+<div class="tabs">
+  <button class="tab" onclick="showTab('intro', this)">Visió general</button>
+  <button class="tab" onclick="showTab('classes', this)">Classes</button>
+  <button class="tab" onclick="showTab('casos', this)">Casos d'ús</button>
+  <button class="tab" onclick="showTab('seq', this)">Seqüència</button>
+  <button class="tab" onclick="showTab('com', this)">Comunicació</button>
+  <button class="tab" onclick="showTab('act', this)">Activitats</button>
+  <button class="tab" onclick="showTab('est', this)">Estats</button>
+  <button class="tab" onclick="showTab('errors', this)">Errors típics</button>
+  <button class="tab" onclick="showTab('quiz', this)">Quiz</button>
+</div>
+
+<!-- =================== INTRO =================== -->
+<section id="intro" class="section">
+  <div class="hero">
+    <h2>UML: per què i quan</h2>
+    <p class="lead">UML no és un llenguatge de programació, és una notació gràfica. Serveix per <strong>comunicar el disseny abans de programar</strong> — entre tu i els companys, o entre tu i el client.</p>
+  </div>
+
+  <h3>Els 2 grans grups (això cau a la PAF)</h3>
+  <table>
+    <tr><th>Grup</th><th>Diagrames</th><th>Per a què serveix</th></tr>
+    <tr>
+      <td><strong>Estructurals</strong></td>
+      <td>Classes</td>
+      <td>Què és el sistema, quines entitats té</td>
+    </tr>
+    <tr>
+      <td rowspan="5"><strong>De comportament</strong></td>
+      <td>Casos d'ús</td>
+      <td>Què poden fer els usuaris (actors)</td>
+    </tr>
+    <tr><td>Seqüència</td><td>Com flueix una operació al llarg del temps</td></tr>
+    <tr><td>Comunicació</td><td>Igual que seqüència però amb èmfasi en qui parla amb qui</td></tr>
+    <tr><td>Activitats</td><td>Flux de treball amb decisions i tasques paral·leles</td></tr>
+    <tr><td>Estats</td><td>Cicle de vida d'un objecte (com canvia segons els esdeveniments)</td></tr>
+  </table>
+
+  <div class="card info">
+    <div class="card-title">💡 Què preguntar-te al diagrama de l'examen</div>
+    <p>Llegeix l'enunciat i identifica:</p>
+    <ul>
+      <li>Hi ha <strong>actors</strong> (usuaris, sistemes externs)? → casos d'ús</li>
+      <li>Hi ha un <strong>ordre d'accions</strong> entre objectes? → seqüència o comunicació</li>
+      <li>Hi ha <strong>tasques paral·leles</strong> que es divideixen i tornen a fusionar-se? → activitats</li>
+      <li>Hi ha un <strong>cicle</strong> que un objecte passa (operatiu, avariat, fora de servei...)? → estats</li>
+      <li>Es descriuen <strong>entitats amb atributs i relacions</strong>? → classes</li>
+    </ul>
+  </div>
+</section>
+
+<!-- =================== CLASSES =================== -->
+<section id="classes" class="section">
+  <h2>Diagrama de classes</h2>
+
+  <h3>Estructura d'una classe</h3>
+  <pre><code><span class="com">┌──────────────────┐</span>
+<span class="com">│   NomClasse      │  ← nom en singular, sense espais</span>
+<span class="com">├──────────────────┤</span>
+<span class="com">│ - dni: String    │  ← atributs: visibilitat + nom + tipus</span>
+<span class="com">│ - edat: int      │</span>
+<span class="com">├──────────────────┤</span>
+<span class="com">│ + treballar()    │  ← operacions/mètodes</span>
+<span class="com">└──────────────────┘</span></code></pre>
+
+  <h3>Visibilitat — l'únic que cau sempre</h3>
+  <table>
+    <tr><th>Símbol</th><th>Visibilitat</th><th>Quan</th></tr>
+    <tr><td><code>+</code></td><td>public</td><td>Operacions</td></tr>
+    <tr><td><code>-</code></td><td>private</td><td>Atributs (per defecte)</td></tr>
+    <tr><td><code>#</code></td><td>protected</td><td>Quan es vol heretar</td></tr>
+    <tr><td><code>~</code></td><td>package</td><td>Rar a la PAF</td></tr>
+  </table>
+
+  <h3>Tipus de relacions — el quid de la qüestió</h3>
+
+  <div class="card info">
+    <div class="card-title">1️⃣ Associació simple</div>
+    <p>Línia recta. Un objecte <em>coneix</em> l'altre però no en depèn vitalment.</p>
+    <pre><code><span class="typ">Cientific</span> ────── <span class="typ">Expedicio</span>
+              *           *</code></pre>
+    <p><em>Exemple EAC1:</em> Un científic participa en moltes expedicions i una expedició té molts científics.</p>
+  </div>
+
+  <div class="card good">
+    <div class="card-title">2️⃣ Agregació — rombe BUIT</div>
+    <p>"Té-un" feble. La part pot existir sense el tot.</p>
+    <pre><code><span class="typ">Dron</span> ◇────── <span class="typ">Sensor</span>
+       *          *</code></pre>
+    <p><em>Exemple EAC1:</em> Un dron porta sensors, però els sensors es poden treure i posar a un altre dron. <strong>Si el dron es destrueix, els sensors sobreviuen.</strong></p>
+  </div>
+
+  <div class="card bad">
+    <div class="card-title">3️⃣ Composició — rombe PLE</div>
+    <p>"Té-un" fort. La part NO existeix sense el tot.</p>
+    <pre><code><span class="typ">Dron</span> ◆────── <span class="typ">MotorPropulsio</span>
+       1          1..*</code></pre>
+    <p><em>Exemple EAC1:</em> Un dron està format per motors. <strong>Si el dron es destrueix, els motors també.</strong></p>
+  </div>
+
+  <div class="card warn">
+    <div class="card-title">4️⃣ Herència — fletxa triangular BUIDA</div>
+    <p>"És-un". La subclasse hereta de la superclasse.</p>
+    <pre><code>      <span class="typ">Cientific</span>
+          △
+          │
+   <span class="typ">DirectorEstacio</span></code></pre>
+    <p><em>Exemple EAC1:</em> <code>DirectorEstacio</code> és un tipus especial de <code>Cientific</code>.</p>
+  </div>
+
+  <div class="card info">
+    <div class="card-title">5️⃣ Classe-associació</div>
+    <p>Quan la <strong>relació</strong> entre dues classes té atributs propis.</p>
+    <pre><code><span class="typ">Cientific</span> ─────────── <span class="typ">Expedicio</span>
+              │
+              │
+       <span class="typ">Assignacio</span>
+       - rol
+       - hores</code></pre>
+    <p><em>Exemple EAC1:</em> Cada vegada que un científic participa en una expedició es genera una <code>Assignacio</code> amb el rol i les hores dedicades.</p>
+  </div>
+
+  <h3>Cardinalitats — el que MAI s'oblida</h3>
+  <table>
+    <tr><th>Notació</th><th>Significat</th></tr>
+    <tr><td><code>1</code></td><td>Exactament un</td></tr>
+    <tr><td><code>0..1</code></td><td>Cap o un (opcional)</td></tr>
+    <tr><td><code>*</code> o <code>0..*</code></td><td>Cap, un o molts</td></tr>
+    <tr><td><code>1..*</code></td><td>Almenys un</td></tr>
+    <tr><td><code>1..5</code></td><td>Entre 1 i 5</td></tr>
+  </table>
+
+  <div class="card warn">
+    <div class="card-title">⚠️ Trampa freqüent</div>
+    <p>La cardinalitat es posa a <strong>l'extrem oposat</strong> de la relació.</p>
+    <p>Si <code>Cientific 1 ──── * Mostra</code> vol dir: cada mostra té <strong>1 científic</strong>, i cada científic té <strong>moltes mostres</strong>.</p>
+  </div>
+
+  <h3>Flux recomanat a Papyrus</h3>
+  <ol>
+    <li>Crea totes les classes <strong>sense atributs</strong>.</li>
+    <li>Afegeix atributs a cada classe.</li>
+    <li>Connecta les relacions i posa cardinalitats.</li>
+  </ol>
+  <p>Aquest ordre evita haver de refer feina quan canvies relacions.</p>
+</section>
+
+<!-- =================== CASOS D'ÚS =================== -->
+<section id="casos" class="section">
+  <h2>Diagrama de casos d'ús</h2>
+  <p>Mostra <strong>què pot fer un actor</strong> amb el sistema. No diu com, només què.</p>
+
+  <h3>Elements</h3>
+  <table>
+    <tr><th>Element</th><th>Símbol</th><th>Significat</th></tr>
+    <tr><td>Actor</td><td>Stickman 👤</td><td>Usuari o sistema extern</td></tr>
+    <tr><td>Cas d'ús</td><td>Òval</td><td>Una funcionalitat</td></tr>
+    <tr><td>Associació</td><td>Línia recta</td><td>L'actor pot executar el cas</td></tr>
+    <tr><td>Sistema</td><td>Rectangle al voltant</td><td>Frontera del sistema</td></tr>
+  </table>
+
+  <h3>Relacions entre casos d'ús — això sempre cau</h3>
+
+  <div class="card good">
+    <div class="card-title">«include» — sempre s'executa</div>
+    <p>El cas A <strong>sempre</strong> inclou el cas B.</p>
+    <pre><code>Registrar mostra ──&lt;&lt;include&gt;&gt;──▶ Autenticar-se</code></pre>
+    <p>La fletxa va del que <em>inclou</em> cap al que <em>és inclòs</em>.</p>
+    <p><em>Regla mnemotècnica:</em> "Per X, primer cal fer Y → include".</p>
+  </div>
+
+  <div class="card info">
+    <div class="card-title">«extend» — opcional, només si es compleix una condició</div>
+    <p>El cas B <strong>amplia</strong> el cas A en circumstàncies concretes.</p>
+    <pre><code>Registrar mostra ◀──&lt;&lt;extend&gt;&gt;── Adjuntar foto</code></pre>
+    <p>La fletxa va del que <em>amplia</em> cap al que <em>és ampliat</em>.</p>
+    <p><em>Regla mnemotècnica:</em> "X de vegades fa Y → extend".</p>
+  </div>
+
+  <div class="card warn">
+    <div class="card-title">Herència entre actors</div>
+    <p>Si un actor "Director" és un tipus de "Científic" i hereta tot el que fa, fletxa triangular buida igual que a classes.</p>
+  </div>
+
+  <div class="card bad">
+    <div class="card-title">⚠️ La trampa de la PAF</div>
+    <p>Si l'enunciat diu <strong>"totes les operacions requereixen login"</strong>, no hagis de dibuixar 10 fletxes d'include. Posa un cas d'ús "Autenticar-se" i fes que el sistema l'inclogui des d'algun cas pare, o simplement reflecteix-ho amb la relació clara.</p>
+  </div>
+</section>
+
+<!-- =================== SEQÜÈNCIA =================== -->
+<section id="seq" class="section">
+  <h2>Diagrama de seqüència</h2>
+  <p>Mostra l'<strong>ordre temporal</strong> de missatges entre objectes. El temps va <strong>de dalt a baix</strong>.</p>
+
+  <h3>Elements</h3>
+  <ul>
+    <li><strong>Línies de vida</strong> (verticals discontínues) per a cada objecte/actor.</li>
+    <li><strong>Barres d'activació</strong> (rectangles prims sobre la línia) quan l'objecte està fent feina.</li>
+    <li><strong>Missatges</strong> (fletxes horitzontals) entre línies de vida.</li>
+  </ul>
+
+  <h3>Tipus de missatges</h3>
+  <table>
+    <tr><th>Fletxa</th><th>Tipus</th><th>Quan</th></tr>
+    <tr><td>───▶</td><td>Síncron</td><td>L'emissor s'espera la resposta</td></tr>
+    <tr><td>···▶</td><td>Retorn</td><td>Resposta a un missatge síncron</td></tr>
+    <tr><td>──▷</td><td>Asíncron</td><td>L'emissor no espera (notificacions)</td></tr>
+    <tr><td><code>«create»</code></td><td>Crear</td><td>Apareix una línia de vida nova</td></tr>
+    <tr><td><code>«destroy»</code> + X</td><td>Destruir</td><td>S'acaba la línia de vida</td></tr>
+  </table>
+
+  <div class="card info">
+    <div class="card-title">💡 Truc per llegir un diagrama de seqüència</div>
+    <p>Comença des de <strong>dalt a l'esquerra</strong> i baixa pas per pas. Cada fletxa horitzontal és un missatge; cada barra vertical és "estic ocupat fent feina".</p>
+  </div>
+
+  <h3>Exemple mini (alerta de tsunami — EAC1)</h3>
+  <pre><code>Sensor      Sistema      BaseRegles    AlertaTsunami    Director
+  │            │              │              │              │
+  │── vibracio─▶│              │              │              │
+  │            │── verifica──▶│              │              │
+  │            │◀── confirma──│              │              │
+  │            │── «create» ──────────────▶ │              │
+  │            │── activar() ─────────────▶ │              │
+  │            │── notificar ─────────────────────────────▶│
+  │            │                                          │
+  │            │◀── confirmacio recepcio ─────────────────│</code></pre>
+</section>
+
+<!-- =================== COMUNICACIÓ =================== -->
+<section id="com" class="section">
+  <h2>Diagrama de comunicació</h2>
+  <p>Diu <strong>el mateix</strong> que el de seqüència però amb <strong>èmfasi a qui parla amb qui</strong>, no a l'ordre temporal.</p>
+
+  <h3>Diferències clau amb seqüència</h3>
+  <table>
+    <tr><th></th><th>Seqüència</th><th>Comunicació</th></tr>
+    <tr><td>Eix temporal</td><td>Vertical (dalt → baix)</td><td>No té, s'indica amb números</td></tr>
+    <tr><td>Disposició dels objectes</td><td>En línia horitzontal a dalt</td><td>Lliure (com un mapa)</td></tr>
+    <tr><td>Ordre dels missatges</td><td>Pel seu lloc al diagrama</td><td>Numerats: <code>1:</code>, <code>2:</code>, <code>3:</code>...</td></tr>
+    <tr><td>Quan usar-lo</td><td>Volem veure el flux pas a pas</td><td>Volem veure quines connexions hi ha</td></tr>
+  </table>
+
+  <h3>Exemple mini (missió ROV — EAC1)</h3>
+  <pre><code>     1: ordreInici              4: activar
+CentreControl ────────▶ SistemaNavegacio ◀──── CentreControl
+       │                       │                    │
+       │ 7: prenMostra         │ 5: video           │
+       ▼                       ▼                    ▼
+   BracRobotic            VaixellSuport        SistemaCameres
+                              │
+                              │ 6: detectaAnomalia
+                              ▼
+                          CentreControl</code></pre>
+
+  <div class="card warn">
+    <div class="card-title">⚠️ La numeració</div>
+    <p>Pot ser plana (<code>1, 2, 3...</code>) o jeràrquica (<code>1, 1.1, 1.2, 2...</code>). La jeràrquica indica que un missatge n'és resposta o conseqüència d'un altre.</p>
+  </div>
+</section>
+
+<!-- =================== ACTIVITATS =================== -->
+<section id="act" class="section">
+  <h2>Diagrama d'activitats</h2>
+  <p>Flux de treball <strong>pas a pas</strong>. Com un diagrama de flux però amb suport per a <strong>tasques paral·leles</strong>.</p>
+
+  <h3>Elements bàsics</h3>
+  <table>
+    <tr><th>Element</th><th>Símbol</th><th>Significat</th></tr>
+    <tr><td>Inici</td><td>● cercle ple</td><td>Punt d'arrencada</td></tr>
+    <tr><td>Final</td><td>● amb anell</td><td>Punt de finalització</td></tr>
+    <tr><td>Activitat</td><td>Rectangle arrodonit</td><td>Una acció</td></tr>
+    <tr><td>Decisió</td><td>Rombe</td><td>Pregunta amb sí/no o branques</td></tr>
+    <tr><td>Bifurcació (fork)</td><td>Barra negra horitzontal</td><td>Es divideix en activitats paral·leles</td></tr>
+    <tr><td>Unió (join)</td><td>Barra negra horitzontal</td><td>Es tornen a fusionar les paral·leles</td></tr>
+  </table>
+
+  <div class="card good">
+    <div class="card-title">Fork i Join — la part forta</div>
+    <p>Quan l'enunciat diu <strong>"l'equip es divideix per fer dues tasques alhora"</strong>:</p>
+    <ol>
+      <li>Posa una barra de <strong>fork</strong>.</li>
+      <li>Surten dues activitats en paral·lel.</li>
+      <li>Posa una barra de <strong>join</strong> quan han de tornar a sincronitzar-se.</li>
+    </ol>
+  </div>
+
+  <h3>Exemple mini (fuita de combustible — EAC1)</h3>
+  <pre><code>     ●
+     │
+[Activa alarma]
+     │
+     ▬▬ fork ▬▬
+     │       │
+[Segellar]  [Desplegar barreres]
+     │       │
+     ▬▬ join ▬▬
+     │
+[Avaluar abast]
+     │
+     ▬▬ fork ▬▬
+     │       │
+[Bombes]   [Neteja quim.]
+     │       │
+     ▬▬ join ▬▬
+     │
+    ◇ toxic &lt; 0.5?
+   sí ╱   ╲ no
+[Emet informe]   [Repetir + avisar]
+   │              │
+   ●              (torna)</code></pre>
+
+  <div class="card warn">
+    <div class="card-title">⚠️ No confonguis amb un flow chart clàssic</div>
+    <p>UML d'activitats <strong>no</strong> usa rombes amb "S/N" dins. Les decisions tenen condicions <strong>als guards</strong> a sobre de les fletxes de sortida: <code>[toxic &lt; 0.5]</code>.</p>
+  </div>
+</section>
+
+<!-- =================== ESTATS =================== -->
+<section id="est" class="section">
+  <h2>Diagrama d'estats</h2>
+  <p>Mostra el <strong>cicle de vida d'un objecte</strong>: en quins estats pot estar i quins esdeveniments el fan canviar.</p>
+
+  <h3>Elements</h3>
+  <table>
+    <tr><th>Element</th><th>Símbol</th><th>Significat</th></tr>
+    <tr><td>Inici</td><td>● cercle ple</td><td>Estat inicial</td></tr>
+    <tr><td>Final</td><td>● amb anell</td><td>Estat final (pot no haver-n'hi)</td></tr>
+    <tr><td>Estat</td><td>Rectangle arrodonit (NOM EN MAJÚSCULES)</td><td>Una situació de l'objecte</td></tr>
+    <tr><td>Transició</td><td>Fletxa amb etiqueta</td><td><code>esdeveniment [condició] / acció</code></td></tr>
+  </table>
+
+  <h3>Format d'una transició</h3>
+  <pre><code><span class="str">esdeveniment</span> <span class="com">[condicio_guard]</span> / <span class="fn">accio_a_executar</span></code></pre>
+  <p>Tots tres elements són opcionals. Si només hi ha un esdeveniment, només cal el nom.</p>
+
+  <h3>Exemple mini (submarí — EAC1)</h3>
+  <pre><code>● ──▶ REVISIÓ EN PORT
+            │ ordre missio
+            ▼
+       DESCENDINT
+            │ arriba cota
+            ▼
+       EXPLORACIÓ SUBMARINA ◀──┐
+       │  │  │                  │
+       │  │  └─ recollir mostra ─▶ RECOLLIR MOSTRA
+       │  │                       (auto-torna)
+       │  │
+       │  └─ fallada estructural ─▶ AVARIAT
+       │                              │ resolt
+       │                              ▼
+       │                          EXPLORACIÓ SUBMARINA
+       │                              │ no resolt
+       │                              ▼
+       │                          ● FORA DE SERVEI
+       │
+       └─ perdua oxigen ──▶ ASCENS D'EMERGÈNCIA
+              │
+              ▼
+           ANCORAT
+              │
+              ●</code></pre>
+
+  <div class="card info">
+    <div class="card-title">💡 Estats compostos</div>
+    <p>Si un grup d'estats comparteixen una mateixa transició de sortida (ex: "des de qualsevol estat operatiu es pot anar a AVARIAT"), pots agrupar-los dins un super-estat.</p>
+  </div>
+</section>
+
+<!-- =================== ERRORS TÍPICS =================== -->
+<section id="errors" class="section">
+  <h2>Errors típics amb UML (els que has comès o pots cometre)</h2>
+
+  <div class="card bad">
+    <div class="card-title">❌ Etiquetes de rol duplicades</div>
+    <p><strong>Cas real (EAC1):</strong> Al teu diagrama de classes apareixia <code>+ expedicio</code> dues vegades a la classe <code>Expedicio</code>. Això passa perquè a Papyrus, quan crees una associació, et posa una etiqueta de rol automàticament. Si edites manualment i hi afegeixes una altra, queden duplicades.</p>
+    <p><strong>Solució:</strong> revisa cada associació al "Properties" de Papyrus i elimina rols redundants.</p>
+  </div>
+
+  <div class="card bad">
+    <div class="card-title">❌ Cardinalitats invisibles al PNG exportat</div>
+    <p><strong>Cas real (EAC1):</strong> Vas posar <code>* a *</code> entre Cientific i Expedicio però no es veien al PNG. Papyrus deixa les etiquetes en posicions que es solapen amb les línies o queden fora de la zona de captura.</p>
+    <p><strong>Solució:</strong> abans d'exportar, mou cada cardinalitat <strong>manualment</strong> i amplia el "diagram canvas" perquè tot quedi dins.</p>
+  </div>
+
+  <div class="card bad">
+    <div class="card-title">❌ Fletxa d'herència que no s'exporta</div>
+    <p><strong>Cas real (EAC1):</strong> La generalització <code>DirectorEstacio → Cientific</code> no es veia al PNG.</p>
+    <p><strong>Solució:</strong> assegura't que la fletxa està connectada als <strong>punts d'ancoratge</strong> de les classes (no només a l'aire). Si la dibuixes en diagonal i passa per darrere d'una altra classe, no apareix.</p>
+  </div>
+
+  <div class="card bad">
+    <div class="card-title">❌ Associació "fantasma" entre classes que no s'haurien de tocar</div>
+    <p><strong>Cas real (EAC1):</strong> Vas posar una associació entre <code>Laboratori</code> i <code>Cientific</code> que l'enunciat no demanava. L'enunciat només connectava Laboratori amb Mostra.</p>
+    <p><strong>Solució:</strong> abans d'exportar, fes una <strong>checklist</strong>: per a cada relació del diagrama, comprova que apareix explícitament a l'enunciat.</p>
+  </div>
+
+  <div class="card warn">
+    <div class="card-title">⚠️ Confondre agregació amb composició</div>
+    <p><strong>Regla d'or:</strong> pregunta't "<em>si destrueixo el tot, què passa amb la part?</em>"</p>
+    <ul>
+      <li>Si la part <strong>sobreviu</strong> → agregació (rombe buit).</li>
+      <li>Si la part <strong>també mor</strong> → composició (rombe ple).</li>
+    </ul>
+    <p><strong>Cas EAC1:</strong> Dron ◇── Sensor (els sensors es poden treure) vs Dron ◆── MotorPropulsio ("els motors no tenen sentit en el sistema si el dron es destrueix").</p>
+  </div>
+
+  <div class="card warn">
+    <div class="card-title">⚠️ Posar getters/setters al diagrama</div>
+    <p>Els enunciats sempre diuen "no representeu getters ni setters". <strong>No</strong> els posis ni al diagrama ni a la llista d'operacions. Sí que aniran al codi Java generat, però al diagrama UML no han de sortir.</p>
+  </div>
+
+  <div class="card warn">
+    <div class="card-title">⚠️ Classe-associació mal representada</div>
+    <p>La classe-associació es connecta a la línia d'associació amb una <strong>línia discontínua</strong>, no es posa com una tercera classe normal.</p>
+    <pre><code>Cientific ─── Expedicio
+        │ ········· │
+        │  línia discontínua
+        ▼
+     Assignacio
+     - rol
+     - hores</code></pre>
+  </div>
+
+  <div class="card bad">
+    <div class="card-title">❌ Codi generat per Papyrus amb errors</div>
+    <p><strong>Cas real (EAC1):</strong> Papyrus va generar <code>public missioRecerca missiorecerca;</code> en minúscules per una relació mal configurada. <strong>L'enunciat de l'exercici 3 diu explícitament: "Si alguna cosa s'importa malament, no heu de modificar-la."</strong> A la PAF d'enginyeria inversa, deixa el codi tal com l'ha generat Papyrus.</p>
+  </div>
+</section>
+
+<!-- =================== QUIZ =================== -->
+<section id="quiz" class="section">
+  <h2>Quiz UML (12 preguntes)</h2>
+  <p style="color:var(--text-dim);font-size:0.9rem;">Aquest quiz <strong>no</strong> compta a la puntuació PAF — és per autoavaluació.</p>
+
+  <div class="quiz">
+
+    <div class="q">
+      <div class="q-text">1. A UML, una agregació es representa amb...</div>
+      <div class="opts">
+        <button class="opt" data-opt="a" onclick="answer(this,'b','q1')">a) Un rombe ple</button>
+        <button class="opt" data-opt="b" onclick="answer(this,'b','q1')">b) Un rombe buit</button>
+        <button class="opt" data-opt="c" onclick="answer(this,'b','q1')">c) Una fletxa triangular buida</button>
+        <button class="opt" data-opt="d" onclick="answer(this,'b','q1')">d) Una línia discontínua</button>
+      </div>
+      <div class="explain" id="exp_q1">El <strong>rombe buit</strong> és agregació ("té-un" feble — la part sobreviu al tot). El rombe ple és composició. La fletxa triangular buida és herència.</div>
+    </div>
+
+    <div class="q">
+      <div class="q-text">2. Tens dues classes <code>Persona</code> i <code>Empresa</code>. Una persona pot treballar a una o cap empresa i una empresa té entre 1 i 500 empleats. La cardinalitat correcta és:</div>
+      <div class="opts">
+        <button class="opt" data-opt="a" onclick="answer(this,'c','q2')">a) Persona <code>1</code> ── <code>*</code> Empresa</button>
+        <button class="opt" data-opt="b" onclick="answer(this,'c','q2')">b) Persona <code>1..*</code> ── <code>0..1</code> Empresa</button>
+        <button class="opt" data-opt="c" onclick="answer(this,'c','q2')">c) Persona <code>1..500</code> ── <code>0..1</code> Empresa</button>
+        <button class="opt" data-opt="d" onclick="answer(this,'c','q2')">d) Persona <code>0..1</code> ── <code>1..500</code> Empresa</button>
+      </div>
+      <div class="explain" id="exp_q2">La cardinalitat es posa <strong>a l'extrem oposat</strong>. Cada persona té 0..1 empresa, per tant aquest 0..1 va al costat d'Empresa. Cada empresa té 1..500 persones, per tant 1..500 va al costat de Persona. Opció <strong>c</strong>.</div>
+    </div>
+
+    <div class="q">
+      <div class="q-text">3. Una <em>classe-associació</em> serveix per:</div>
+      <div class="opts">
+        <button class="opt" data-opt="a" onclick="answer(this,'b','q3')">a) Heretar atributs d'una associació</button>
+        <button class="opt" data-opt="b" onclick="answer(this,'b','q3')">b) Donar atributs propis a la <strong>relació</strong> entre dues classes</button>
+        <button class="opt" data-opt="c" onclick="answer(this,'b','q3')">c) Crear una composició múltiple</button>
+        <button class="opt" data-opt="d" onclick="answer(this,'b','q3')">d) Indicar que dues classes són la mateixa</button>
+      </div>
+      <div class="explain" id="exp_q3">Quan la <strong>relació</strong> té dades pròpies (com el rol i les hores d'una assignació), es crea una classe-associació connectada a la línia d'associació amb una línia discontínua.</div>
+    </div>
+
+    <div class="q">
+      <div class="q-text">4. A un diagrama de casos d'ús, la relació <code>«include»</code> indica:</div>
+      <div class="opts">
+        <button class="opt" data-opt="a" onclick="answer(this,'b','q4')">a) El cas inclòs s'executa opcionalment</button>
+        <button class="opt" data-opt="b" onclick="answer(this,'b','q4')">b) El cas inclòs s'executa <strong>sempre</strong> com a part de l'altre</button>
+        <button class="opt" data-opt="c" onclick="answer(this,'b','q4')">c) Un actor hereta d'un altre</button>
+        <button class="opt" data-opt="d" onclick="answer(this,'b','q4')">d) Un cas amplia un altre en una condició concreta</button>
+      </div>
+      <div class="explain" id="exp_q4"><code>«include»</code> = sempre s'executa. <code>«extend»</code> = opcional sota condició. L'opció d descriu extend.</div>
+    </div>
+
+    <div class="q">
+      <div class="q-text">5. A un diagrama d'activitats, una barra negra horitzontal pot representar:</div>
+      <div class="opts">
+        <button class="opt" data-opt="a" onclick="answer(this,'d','q5')">a) Un estat final</button>
+        <button class="opt" data-opt="b" onclick="answer(this,'d','q5')">b) Un missatge asíncron</button>
+        <button class="opt" data-opt="c" onclick="answer(this,'d','q5')">c) Una decisió condicional</button>
+        <button class="opt" data-opt="d" onclick="answer(this,'d','q5')">d) Una bifurcació (fork) o unió (join) de tasques paral·leles</button>
+      </div>
+      <div class="explain" id="exp_q5">La barra negra té <strong>doble propòsit</strong>: si en surten múltiples activitats és un <strong>fork</strong>; si convergeixen múltiples en una és un <strong>join</strong>. Les decisions són rombes, no barres.</div>
+    </div>
+
+    <div class="q">
+      <div class="q-text">6. En un diagrama d'estats, el format d'una transició és:</div>
+      <div class="opts">
+        <button class="opt" data-opt="a" onclick="answer(this,'b','q6')">a) <code>estat_origen → estat_destí</code></button>
+        <button class="opt" data-opt="b" onclick="answer(this,'b','q6')">b) <code>esdeveniment [condició] / acció</code></button>
+        <button class="opt" data-opt="c" onclick="answer(this,'b','q6')">c) <code>{guard} acció()</code></button>
+        <button class="opt" data-opt="d" onclick="answer(this,'b','q6')">d) <code>esdeveniment.acció(condició)</code></button>
+      </div>
+      <div class="explain" id="exp_q6">Format estàndard UML: <code>esdeveniment [condició_guard] / acció</code>. Els tres elements són opcionals.</div>
+    </div>
+
+    <div class="q">
+      <div class="q-text">7. Diferència principal entre seqüència i comunicació:</div>
+      <div class="opts">
+        <button class="opt" data-opt="a" onclick="answer(this,'c','q7')">a) Seqüència mostra atributs, comunicació no</button>
+        <button class="opt" data-opt="b" onclick="answer(this,'c','q7')">b) Comunicació té eix temporal, seqüència no</button>
+        <button class="opt" data-opt="c" onclick="answer(this,'c','q7')">c) Seqüència té eix temporal vertical, comunicació numera els missatges</button>
+        <button class="opt" data-opt="d" onclick="answer(this,'c','q7')">d) No hi ha diferència, són sinònims</button>
+      </div>
+      <div class="explain" id="exp_q7">Tots dos representen interaccions entre objectes, però seqüència té eix temporal (dalt → baix) i comunicació enumera els missatges (1, 2, 3, 1.1...). El mateix flux es pot dibuixar de les dues maneres.</div>
+    </div>
+
+    <div class="q">
+      <div class="q-text">8. Composició vs agregació: la diferència crítica és que en composició...</div>
+      <div class="opts">
+        <button class="opt" data-opt="a" onclick="answer(this,'c','q8')">a) Les parts són sempre del mateix tipus</button>
+        <button class="opt" data-opt="b" onclick="answer(this,'c','q8')">b) Hi pot haver herència múltiple</button>
+        <button class="opt" data-opt="c" onclick="answer(this,'c','q8')">c) Si destrueixes el tot, les parts també desapareixen</button>
+        <button class="opt" data-opt="d" onclick="answer(this,'c','q8')">d) Les parts es comparteixen entre múltiples objectes</button>
+      </div>
+      <div class="explain" id="exp_q8">Composició = vinculació forta: les parts no tenen sentit sense el tot. Un motor de propulsió no té sentit sense el dron. Un sensor sí (es pot canviar de dron) → agregació.</div>
+    </div>
+
+    <div class="q">
+      <div class="q-text">9. A un diagrama de classes, la <strong>visibilitat protegida</strong> es marca amb:</div>
+      <div class="opts">
+        <button class="opt" data-opt="a" onclick="answer(this,'c','q9')">a) <code>+</code></button>
+        <button class="opt" data-opt="b" onclick="answer(this,'c','q9')">b) <code>-</code></button>
+        <button class="opt" data-opt="c" onclick="answer(this,'c','q9')">c) <code>#</code></button>
+        <button class="opt" data-opt="d" onclick="answer(this,'c','q9')">d) <code>~</code></button>
+      </div>
+      <div class="explain" id="exp_q9"><code>+</code> public · <code>-</code> private · <code>#</code> protected · <code>~</code> package.</div>
+    </div>
+
+    <div class="q">
+      <div class="q-text">10. A un diagrama de seqüència, una fletxa <strong>discontínua</strong> normalment representa:</div>
+      <div class="opts">
+        <button class="opt" data-opt="a" onclick="answer(this,'b','q10')">a) Una crida síncrona</button>
+        <button class="opt" data-opt="b" onclick="answer(this,'b','q10')">b) Un missatge de retorn (resposta a una crida síncrona)</button>
+        <button class="opt" data-opt="c" onclick="answer(this,'b','q10')">c) Un missatge asíncron</button>
+        <button class="opt" data-opt="d" onclick="answer(this,'b','q10')">d) La destrucció d'un objecte</button>
+      </div>
+      <div class="explain" id="exp_q10">Fletxa contínua plena → crida síncrona. Fletxa discontínua → retorn. Fletxa amb punta oberta → asíncron.</div>
+    </div>
+
+    <div class="q">
+      <div class="q-text">11. Un actor a UML és sempre:</div>
+      <div class="opts">
+        <button class="opt" data-opt="a" onclick="answer(this,'c','q11')">a) Una persona física</button>
+        <button class="opt" data-opt="b" onclick="answer(this,'c','q11')">b) Una classe Java</button>
+        <button class="opt" data-opt="c" onclick="answer(this,'c','q11')">c) Una entitat externa al sistema (persona o un altre sistema)</button>
+        <button class="opt" data-opt="d" onclick="answer(this,'c','q11')">d) Una instància d'una classe</button>
+      </div>
+      <div class="explain" id="exp_q11">Un actor pot ser una persona, un altre sistema o un dispositiu — qualsevol cosa <strong>externa</strong> que interactua amb el sistema modelat.</div>
+    </div>
+
+    <div class="q">
+      <div class="q-text">12. A l'enginyeria inversa amb Papyrus, importar codi mal escrit produeix relacions o atributs incorrectes. Què s'ha de fer a l'examen?</div>
+      <div class="opts">
+        <button class="opt" data-opt="a" onclick="answer(this,'c','q12')">a) Corregir tot el codi abans d'importar</button>
+        <button class="opt" data-opt="b" onclick="answer(this,'c','q12')">b) Eliminar les classes mal generades</button>
+        <button class="opt" data-opt="c" onclick="answer(this,'c','q12')">c) <strong>Deixar-ho tal com Papyrus l'ha generat</strong>, només dimensionar perquè es vegi sencer</button>
+        <button class="opt" data-opt="d" onclick="answer(this,'c','q12')">d) Tornar a dibuixar el diagrama a mà</button>
+      </div>
+      <div class="explain" id="exp_q12">L'enunciat sol dir explícitament: <em>"Si alguna cosa s'importa malament, no heu de modificar-la."</em> L'objectiu és veure com Papyrus interpreta el codi, no corregir el resultat.</div>
+    </div>
+
+  </div>
+</section>
+
+<div id="tracker" class="tracker"></div>
+<script src="shared.js"></script>
+</body>
+</html>

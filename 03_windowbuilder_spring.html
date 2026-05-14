@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>03 · WindowBuilder + Spring — Repàs PAF M0487</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header>
+  <h1>03 · Interpretació de codi: WindowBuilder + Spring</h1>
+  <a class="back" href="index.html">← Índex</a>
+</header>
+
+<div class="tabs">
+  <button class="tab" onclick="showTab('intro', this)">Què cau</button>
+  <button class="tab" onclick="showTab('swing', this)">Swing components</button>
+  <button class="tab" onclick="showTab('wb', this)">Llegir WindowBuilder</button>
+  <button class="tab" onclick="showTab('spring', this)">Llegir Spring</button>
+  <button class="tab" onclick="showTab('exercicis', this)">Exercicis de lectura</button>
+  <button class="tab" onclick="showTab('quiz', this)">Quiz</button>
+</div>
+
+<!-- =================== INTRO =================== -->
+<section id="intro" class="section">
+  <div class="hero">
+    <h2>El que entra a la PAF d'aquest bloc</h2>
+    <p class="lead">A la PAF <strong>no has d'escriure</strong> codi de WindowBuilder ni Spring. Has de saber <strong>interpretar-lo</strong>: identificar què fa cada classe, mètode, anotació, etc.</p>
+  </div>
+
+  <div class="card warn">
+    <div class="card-title">El que t'han de preguntar</div>
+    <ul>
+      <li>"Aquest mètode <code>actionPerformed</code> què fa?"</li>
+      <li>"Quin component representa <code>JComboBox</code>?"</li>
+      <li>"Què fa l'anotació <code>@GetMapping</code>?"</li>
+      <li>"Per què el botó queda deshabilitat?"</li>
+      <li>"Quin endpoint URL respon aquest controlador?"</li>
+    </ul>
+  </div>
+</section>
+
+<!-- =================== SWING =================== -->
+<section id="swing" class="section">
+  <h2>Components Swing — el que has fet servir a l'EAC2</h2>
+
+  <table>
+    <tr><th>Component</th><th>Què és</th><th>Mètodes clau</th></tr>
+    <tr>
+      <td><code>JFrame</code></td>
+      <td>La finestra principal</td>
+      <td><code>setVisible(true)</code>, <code>setTitle(...)</code>, <code>setSize(w,h)</code></td>
+    </tr>
+    <tr>
+      <td><code>JPanel</code></td>
+      <td>Contenidor per agrupar components</td>
+      <td><code>add(...)</code>, <code>setLayout(...)</code></td>
+    </tr>
+    <tr>
+      <td><code>JLabel</code></td>
+      <td>Text no editable</td>
+      <td><code>setText(...)</code>, <code>getText()</code></td>
+    </tr>
+    <tr>
+      <td><code>JTextField</code></td>
+      <td>Caixa de text d'una línia</td>
+      <td><code>getText()</code>, <code>setText(...)</code>, <code>setEditable(b)</code>, <code>requestFocus()</code>, <code>selectAll()</code></td>
+    </tr>
+    <tr>
+      <td><code>JTextArea</code></td>
+      <td>Caixa de text multi-línia</td>
+      <td>Igual que JTextField + <code>append(...)</code></td>
+    </tr>
+    <tr>
+      <td><code>JButton</code></td>
+      <td>Botó clicable</td>
+      <td><code>setEnabled(b)</code>, <code>addActionListener(...)</code></td>
+    </tr>
+    <tr>
+      <td><code>JComboBox</code></td>
+      <td>Desplegable</td>
+      <td><code>getSelectedIndex()</code>, <code>getSelectedItem()</code>, <code>addItem(...)</code>, <code>getItemCount()</code></td>
+    </tr>
+    <tr>
+      <td><code>JCheckBox</code></td>
+      <td>Casella de selecció</td>
+      <td><code>isSelected()</code></td>
+    </tr>
+  </table>
+
+  <h3>Propietats que sempre cauen</h3>
+  <div class="card info">
+    <div class="card-title">setEnabled / setEditable</div>
+    <pre><code>txtAntiguitat.<span class="fn">setEditable</span>(<span class="kw">false</span>); <span class="com">// no es pot escriure dins</span>
+btnValidar.<span class="fn">setEnabled</span>(<span class="kw">false</span>);    <span class="com">// no es pot clicar</span></code></pre>
+    <p><strong>Diferència:</strong></p>
+    <ul>
+      <li><code>setEditable</code> només existeix a camps de text — bloqueja l'escriptura però es pot seleccionar/copiar.</li>
+      <li><code>setEnabled</code> existeix a tots els components — bloqueja interacció i es veu en gris.</li>
+    </ul>
+  </div>
+
+  <div class="card good">
+    <div class="card-title">Tooltips (text d'ajut)</div>
+    <pre><code>txtAntiguitat.<span class="fn">setToolTipText</span>(<span class="str">"Nombre enter entre 0 i 150"</span>);</code></pre>
+    <p>Apareix quan l'usuari hi passa el ratolí per sobre. <strong>L'enunciat EAC2 ho demanava explícitament</strong> per a cada quadre de text editable.</p>
+  </div>
+
+  <div class="card warn">
+    <div class="card-title">⚠️ Seleccionar tot + focus (truc per errors)</div>
+    <p>Quan validació falla, has de ressaltar el camp incorrecte:</p>
+    <pre><code>txtAntiguitat.<span class="fn">requestFocus</span>();
+txtAntiguitat.<span class="fn">selectAll</span>();</code></pre>
+    <p><strong>Ordre crític:</strong> primer focus, després selecció. Si ho fas al revés, el focus deselecciona la selecció.</p>
+  </div>
+</section>
+
+<!-- =================== WB CODE =================== -->
+<section id="wb" class="section">
+  <h2>Llegir codi generat per WindowBuilder</h2>
+
+  <h3>Estructura típica d'una classe Swing</h3>
+  <pre><code><span class="kw">public class</span> <span class="typ">PressupostMarketing</span> {
+
+    <span class="kw">private</span> <span class="typ">JFrame</span> frame;
+    <span class="kw">private</span> <span class="typ">JTextField</span> txtAntiguitat;
+    <span class="kw">private</span> <span class="typ">JComboBox</span>&lt;<span class="typ">String</span>&gt; comboPack;
+    <span class="kw">private</span> <span class="typ">JButton</span> btnValidar;
+    <span class="kw">private</span> <span class="typ">JTextArea</span> txtErrors;
+
+    <span class="com">// 1. Mètode main: arrenca l'app</span>
+    <span class="kw">public static void</span> <span class="fn">main</span>(<span class="typ">String</span>[] args) {
+        <span class="typ">EventQueue</span>.<span class="fn">invokeLater</span>(() -&gt; {
+            <span class="kw">try</span> {
+                <span class="typ">PressupostMarketing</span> window = <span class="kw">new</span> <span class="typ">PressupostMarketing</span>();
+                window.frame.<span class="fn">setVisible</span>(<span class="kw">true</span>);
+            } <span class="kw">catch</span> (<span class="typ">Exception</span> e) {
+                e.<span class="fn">printStackTrace</span>();
+            }
+        });
+    }
+
+    <span class="com">// 2. Constructor: crida initialize()</span>
+    <span class="kw">public</span> <span class="fn">PressupostMarketing</span>() {
+        <span class="fn">initialize</span>();
+    }
+
+    <span class="com">// 3. Crea tota la GUI</span>
+    <span class="kw">private void</span> <span class="fn">initialize</span>() {
+        frame = <span class="kw">new</span> <span class="typ">JFrame</span>();
+        frame.<span class="fn">setTitle</span>(<span class="str">"Pressupost - ElRahali"</span>);
+        frame.<span class="fn">setBounds</span>(<span class="num">100</span>, <span class="num">100</span>, <span class="num">600</span>, <span class="num">500</span>);
+
+        txtAntiguitat = <span class="kw">new</span> <span class="typ">JTextField</span>();
+        txtAntiguitat.<span class="fn">setToolTipText</span>(<span class="str">"Anys (0-150)"</span>);
+
+        btnValidar = <span class="kw">new</span> <span class="typ">JButton</span>(<span class="str">"Validar"</span>);
+        btnValidar.<span class="fn">addActionListener</span>(e -&gt; <span class="fn">validar</span>());
+    }
+
+    <span class="com">// 4. Listener: lògica del botó</span>
+    <span class="kw">private void</span> <span class="fn">validar</span>() {
+        <span class="kw">try</span> {
+            <span class="kw">int</span> anys = <span class="typ">Integer</span>.<span class="fn">parseInt</span>(txtAntiguitat.<span class="fn">getText</span>());
+            <span class="kw">if</span> (anys &lt; <span class="num">0</span> || anys &gt; <span class="num">150</span>) {
+                txtErrors.<span class="fn">setText</span>(<span class="str">"Antiguitat fora de rang"</span>);
+                txtAntiguitat.<span class="fn">requestFocus</span>();
+                txtAntiguitat.<span class="fn">selectAll</span>();
+                <span class="kw">return</span>;
+            }
+            <span class="com">// Dades correctes: deshabilita Dades Client, habilita Campanya</span>
+            txtAntiguitat.<span class="fn">setEnabled</span>(<span class="kw">false</span>);
+            comboGestioXXSS.<span class="fn">setEnabled</span>(<span class="kw">true</span>);
+        } <span class="kw">catch</span> (<span class="typ">NumberFormatException</span> ex) {
+            txtErrors.<span class="fn">setText</span>(<span class="str">"L'antiguitat no és un nombre vàlid"</span>);
+        }
+    }
+}</code></pre>
+
+  <h3>Què mirar per "interpretar" aquest codi</h3>
+  <div class="card info">
+    <div class="card-title">1. Identificar els 4 blocs</div>
+    <ol>
+      <li><strong>main()</strong>: arrenca l'aplicació amb <code>EventQueue.invokeLater</code> (per al thread d'Swing).</li>
+      <li><strong>Constructor</strong>: crida <code>initialize()</code>.</li>
+      <li><strong>initialize()</strong>: crea i configura tots els components visuals.</li>
+      <li><strong>Listeners</strong>: la lògica que reacciona als clics i canvis.</li>
+    </ol>
+  </div>
+
+  <div class="card info">
+    <div class="card-title">2. Identificar listeners</div>
+    <p>Hi ha 2 sintaxis:</p>
+    <pre><code><span class="com">// Clàssica (classe anònima)</span>
+btnValidar.<span class="fn">addActionListener</span>(<span class="kw">new</span> <span class="typ">ActionListener</span>() {
+    <span class="kw">public void</span> <span class="fn">actionPerformed</span>(<span class="typ">ActionEvent</span> e) {
+        <span class="fn">validar</span>();
+    }
+});
+
+<span class="com">// Lambda (moderna, més curta)</span>
+btnValidar.<span class="fn">addActionListener</span>(e -&gt; <span class="fn">validar</span>());</code></pre>
+    <p><strong>Totes dues fan el mateix.</strong> A la PAF, si veus <code>e -&gt;</code>, és una lambda; si veus <code>new ActionListener()</code>, és classe anònima.</p>
+  </div>
+
+  <div class="card warn">
+    <div class="card-title">⚠️ Comprovacions de validació típiques</div>
+    <p>Quan al codi veus aquest patró:</p>
+    <pre><code><span class="kw">if</span> (combo.<span class="fn">getSelectedIndex</span>() == -<span class="num">1</span>) { ... }</code></pre>
+    <p>Significa <strong>"l'usuari no ha seleccionat cap element del desplegable"</strong>. <code>-1</code> indica "res seleccionat".</p>
+    <pre><code><span class="kw">if</span> (camp.<span class="fn">getText</span>().<span class="fn">isEmpty</span>()) { ... }</code></pre>
+    <p>Significa "el camp està buit".</p>
+  </div>
+</section>
+
+<!-- =================== SPRING =================== -->
+<section id="spring" class="section">
+  <h2>Llegir codi Spring Boot</h2>
+
+  <h3>Mini-recordatori de l'EAC2 (Exercici 12)</h3>
+  <p>El que vas fer: un controlador <code>Controlador</code> amb dos endpoints <code>/</code> i <code>/quintuple</code> que multiplica per 5 un nombre rebut.</p>
+
+  <h3>Anotacions clau</h3>
+  <table>
+    <tr><th>Anotació</th><th>Què fa</th></tr>
+    <tr><td><code>@SpringBootApplication</code></td><td>Marca la classe d'arrencada de Spring Boot</td></tr>
+    <tr><td><code>@Controller</code></td><td>Marca una classe com a controlador web (retorna noms de vistes)</td></tr>
+    <tr><td><code>@RestController</code></td><td>Igual però retorna directament dades JSON/text</td></tr>
+    <tr><td><code>@GetMapping("/url")</code></td><td>Aquest mètode respon a peticions <strong>GET</strong> a la URL</td></tr>
+    <tr><td><code>@PostMapping("/url")</code></td><td>Aquest mètode respon a peticions <strong>POST</strong></td></tr>
+    <tr><td><code>@RequestParam</code></td><td>Captura un paràmetre de la URL (<code>?valor=5</code>)</td></tr>
+    <tr><td><code>@PathVariable</code></td><td>Captura un fragment de la URL (<code>/quintuple/5</code>)</td></tr>
+    <tr><td><code>@Autowired</code></td><td>Spring injecta automàticament una instància</td></tr>
+  </table>
+
+  <h3>Exemple complet (com el de l'EAC2)</h3>
+  <pre><code><span class="kw">package</span> com.example.web;
+
+<span class="kw">import</span> org.springframework.boot.SpringApplication;
+<span class="kw">import</span> org.springframework.boot.autoconfigure.SpringBootApplication;
+<span class="kw">import</span> org.springframework.stereotype.Controller;
+<span class="kw">import</span> org.springframework.ui.Model;
+<span class="kw">import</span> org.springframework.web.bind.annotation.GetMapping;
+<span class="kw">import</span> org.springframework.web.bind.annotation.RequestParam;
+
+<span class="anno">@SpringBootApplication</span>
+<span class="anno">@Controller</span>
+<span class="kw">public class</span> <span class="typ">Controlador</span> {
+
+    <span class="kw">public static void</span> <span class="fn">main</span>(<span class="typ">String</span>[] args) {
+        <span class="typ">SpringApplication</span>.<span class="fn">run</span>(<span class="typ">Controlador</span>.<span class="kw">class</span>, args);
+    }
+
+    <span class="anno">@GetMapping</span>(<span class="str">"/"</span>)
+    <span class="kw">public</span> <span class="typ">String</span> <span class="fn">inici</span>() {
+        <span class="kw">return</span> <span class="str">"formulari"</span>;  <span class="com">// nom de la vista (formulari.html)</span>
+    }
+
+    <span class="anno">@GetMapping</span>(<span class="str">"/quintuple"</span>)
+    <span class="kw">public</span> <span class="typ">String</span> <span class="fn">quintuple</span>(<span class="anno">@RequestParam</span>(<span class="str">"valor"</span>) <span class="kw">int</span> valor,
+                            <span class="typ">Model</span> model) {
+        <span class="kw">int</span> resultat = valor * <span class="num">5</span>;
+        model.<span class="fn">addAttribute</span>(<span class="str">"resultat"</span>, resultat);
+        <span class="kw">return</span> <span class="str">"resultat"</span>;  <span class="com">// vista resultat.html</span>
+    }
+}</code></pre>
+
+  <h3>Com llegir aquest codi a la PAF</h3>
+  <div class="card good">
+    <div class="card-title">Pregunta: "Quina URL respon aquest controlador?"</div>
+    <p>Mira els <code>@GetMapping</code>: <code>/</code> i <code>/quintuple</code>. La URL completa seria <code>http://localhost:8080/quintuple?valor=10</code>.</p>
+  </div>
+
+  <div class="card good">
+    <div class="card-title">Pregunta: "Què retorna el mètode <code>quintuple()</code>?"</div>
+    <p>Retorna l'<strong>String</strong> <code>"resultat"</code>, que <strong>no és el resultat numèric</strong>! És el nom de la vista (la plantilla HTML que es renderitzarà). El resultat numèric es passa al model amb <code>model.addAttribute</code>.</p>
+  </div>
+
+  <div class="card good">
+    <div class="card-title">Pregunta: "Per què cal <code>@RequestParam</code>?"</div>
+    <p>Indica que el valor ve de la URL com a paràmetre (<code>?valor=10</code>). Sense l'anotació, Spring no sabria d'on treure el valor.</p>
+  </div>
+
+  <h3>Diferències clau: Spring Boot vs Servlet "tradicional"</h3>
+  <table>
+    <tr><th></th><th>Spring Boot</th><th>Servlet tradicional</th></tr>
+    <tr><td>Servidor</td><td><strong>Tomcat embegut</strong> (no cal instal·lar)</td><td>Cal instal·lar i configurar Tomcat a part</td></tr>
+    <tr><td>Configuració</td><td>Anotacions, gairebé zero XML</td><td>web.xml verbose</td></tr>
+    <tr><td>Arrencada</td><td><code>main()</code> + <code>SpringApplication.run()</code></td><td>Desplegar WAR al servidor</td></tr>
+    <tr><td>Mapping URL</td><td><code>@GetMapping</code> / <code>@PostMapping</code></td><td>Mètode <code>doGet</code> / <code>doPost</code> del servlet</td></tr>
+  </table>
+</section>
+
+<!-- =================== EXERCICIS LECTURA =================== -->
+<section id="exercicis" class="section">
+  <h2>Exercicis de lectura (estil PAF)</h2>
+  <p>Llegeix cada fragment i intenta respondre abans d'obrir el desplegable.</p>
+
+  <details>
+    <summary>📖 Exercici 1 — Què fa aquest listener?</summary>
+    <pre><code>btnEsborrarTot.<span class="fn">addActionListener</span>(e -&gt; {
+    txtAntiguitat.<span class="fn">setText</span>(<span class="str">""</span>);
+    txtAntiguitat.<span class="fn">setEnabled</span>(<span class="kw">true</span>);
+    comboPack.<span class="fn">setSelectedIndex</span>(-<span class="num">1</span>);
+    comboGestioXXSS.<span class="fn">setEnabled</span>(<span class="kw">false</span>);
+    txtErrors.<span class="fn">setText</span>(<span class="str">""</span>);
+});</code></pre>
+    <p><strong>Resposta:</strong> Quan es clica el botó "Esborrar tot": (1) buida el camp d'antiguitat, (2) el torna a habilitar, (3) desselecciona el combo del pack, (4) deshabilita el combo de gestió de XXSS (perquè ha de tornar a la fase de Dades Client), (5) neteja la caixa d'errors. És el reset complet de l'aplicació.</p>
+  </details>
+
+  <details>
+    <summary>📖 Exercici 2 — Què fa aquest fragment d'Spring?</summary>
+    <pre><code><span class="anno">@GetMapping</span>(<span class="str">"/calcula/{a}/{b}"</span>)
+<span class="kw">public</span> <span class="typ">String</span> <span class="fn">calcula</span>(<span class="anno">@PathVariable</span> <span class="kw">int</span> a,
+                      <span class="anno">@PathVariable</span> <span class="kw">int</span> b,
+                      <span class="typ">Model</span> model) {
+    model.<span class="fn">addAttribute</span>(<span class="str">"suma"</span>, a + b);
+    <span class="kw">return</span> <span class="str">"calcul"</span>;
+}</code></pre>
+    <p><strong>Resposta:</strong> Respon a URLs com <code>/calcula/3/7</code>. <code>@PathVariable</code> captura els fragments de la URL (a=3, b=7). Posa la suma al model i retorna la vista <code>calcul.html</code>. Diferent de <code>@RequestParam</code>, que faria servir <code>/calcula?a=3&amp;b=7</code>.</p>
+  </details>
+
+  <details>
+    <summary>📖 Exercici 3 — Què passa quan l'usuari clica "Validar"?</summary>
+    <pre><code><span class="kw">private void</span> <span class="fn">validar</span>() {
+    <span class="kw">int</span> idxPack = comboPack.<span class="fn">getSelectedIndex</span>();
+    <span class="kw">if</span> (idxPack == -<span class="num">1</span>) {
+        txtErrors.<span class="fn">setText</span>(<span class="str">"Selecciona un pack"</span>);
+        comboPack.<span class="fn">requestFocus</span>();
+        <span class="kw">return</span>;
+    }
+    <span class="kw">try</span> {
+        <span class="kw">int</span> anys = <span class="typ">Integer</span>.<span class="fn">parseInt</span>(txtAntiguitat.<span class="fn">getText</span>());
+        <span class="kw">if</span> (anys &lt; <span class="num">0</span> || anys &gt; <span class="num">150</span>) {
+            <span class="kw">throw new</span> <span class="typ">NumberFormatException</span>();
+        }
+        txtErrors.<span class="fn">setText</span>(<span class="str">""</span>);
+        seccionCampanya.<span class="fn">setEnabled</span>(<span class="kw">true</span>);
+    } <span class="kw">catch</span> (<span class="typ">NumberFormatException</span> ex) {
+        txtErrors.<span class="fn">setText</span>(<span class="str">"Antiguitat invàlida (0-150)"</span>);
+        txtAntiguitat.<span class="fn">requestFocus</span>();
+        txtAntiguitat.<span class="fn">selectAll</span>();
+    }
+}</code></pre>
+    <p><strong>Resposta:</strong></p>
+    <ol>
+      <li>Si no hi ha pack seleccionat (index = -1) → error, focus al combo, surt.</li>
+      <li>Intenta parsejar l'antiguitat com a enter.</li>
+      <li>Si està fora de 0-150 o no és nombre → catch llança error, focus + selectAll al camp.</li>
+      <li>Si tot va bé → neteja errors i habilita la secció Campanya.</li>
+    </ol>
+  </details>
+
+  <details>
+    <summary>📖 Exercici 4 — Què té de particular aquesta línia?</summary>
+    <pre><code><span class="typ">SpringApplication</span>.<span class="fn">run</span>(<span class="typ">Controlador</span>.<span class="kw">class</span>, args);</code></pre>
+    <p><strong>Resposta:</strong> Aquesta línia arrenca <strong>tota l'aplicació Spring Boot</strong>:</p>
+    <ul>
+      <li>Inicialitza el context de Spring (registra controladors, beans...).</li>
+      <li>Arrenca el servidor <strong>Tomcat embegut</strong> (per defecte al port 8080).</li>
+      <li>Activa l'auto-configuració de <code>@SpringBootApplication</code>.</li>
+    </ul>
+    <p>Per això a Spring Boot no necessites instal·lar Tomcat per separat com en l'enfocament tradicional amb servlets.</p>
+  </details>
+
+  <details>
+    <summary>📖 Exercici 5 — Per què aquest tooltip és important?</summary>
+    <pre><code>txtDescompte.<span class="fn">setToolTipText</span>(<span class="str">"Euros a descomptar (0 fins preu base del pack)"</span>);</code></pre>
+    <p><strong>Resposta:</strong> Els tooltips compleixen l'<strong>obligació de l'enunciat de l'EAC2</strong>: "Cal posar un text d'ajut a cada quadre de text editable". Indica a l'usuari què espera la validació (un valor entre 0 i el preu del pack). Si la PAF mostra codi sense tooltip i pregunta "què falta?", podria ser aquesta la resposta.</p>
+  </details>
+</section>
+
+<!-- =================== QUIZ =================== -->
+<section id="quiz" class="section">
+  <h2>Quiz — Interpretació de codi (10 preguntes)</h2>
+
+  <div class="quiz">
+
+    <div class="q">
+      <div class="q-text">1. Què fa la línia <code>combo.getSelectedIndex() == -1</code> en un if?</div>
+      <div class="opts">
+        <button class="opt" data-opt="a" onclick="answer(this,'b','w1')">a) Comprova si el combo està deshabilitat</button>
+        <button class="opt" data-opt="b" onclick="answer(this,'b','w1')">b) Comprova si l'usuari no ha seleccionat res al desplegable</button>
+        <button class="opt" data-opt="c" onclick="answer(this,'b','w1')">c) Selecciona el primer element</button>
+        <button class="opt" data-opt="d" onclick="answer(this,'b','w1')">d) Compta el nombre d'elements del combo</button>
+      </div>
+      <div class="explain" id="exp_w1"><code>getSelectedIndex()</code> retorna l'índex (0-based) de l'element seleccionat. <code>-1</code> significa "no hi ha res seleccionat".</div>
+    </div>
+
+    <div class="q">
+      <div class="q-text">2. <code>txt.requestFocus()</code> i <code>txt.selectAll()</code> serveixen per:</div>
+      <div class="opts">
+        <button class="opt" data-opt="a" onclick="answer(this,'c','w2')">a) Buidar la caixa de text</button>
+        <button class="opt" data-opt="b" onclick="answer(this,'c','w2')">b) Deshabilitar la caixa de text</button>
+        <button class="opt" data-opt="c" onclick="answer(this,'c','w2')">c) Donar focus a la caixa i seleccionar tot el seu contingut</button>
+        <button class="opt" data-opt="d" onclick="answer(this,'c','w2')">d) Canviar el color del text</button>
+      </div>
+      <div class="explain" id="exp_w2">És el patró típic per ressaltar un camp amb dada errònia: focus + selecció permeten que l'usuari escrigui directament i sobreescrigui el valor.</div>
+    </div>
+
+    <div class="q">
+      <div class="q-text">3. L'anotació <code>@GetMapping("/quintuple")</code> indica que:</div>
+      <div class="opts">
+        <button class="opt" data-opt="a" onclick="answer(this,'b','w3')">a) El mètode respon a peticions POST a /quintuple</button>
+        <button class="opt" data-opt="b" onclick="answer(this,'b','w3')">b) El mètode respon a peticions GET a /quintuple</button>
+        <button class="opt" data-opt="c" onclick="answer(this,'b','w3')">c) El mètode redirigeix a /quintuple</button>
+        <button class="opt" data-opt="d" onclick="answer(this,'b','w3')">d) Cal fer una petició AJAX explícita</button>
+      </div>
+      <div class="explain" id="exp_w3">GetMapping = GET. PostMapping = POST. Es pot accedir directament des de la barra d'adreces del navegador (que sempre fa GET).</div>
+    </div>
+
+    <div class="q">
+      <div class="q-text">4. Diferència entre <code>@RequestParam</code> i <code>@PathVariable</code>:</div>
+      <div class="opts">
+        <button class="opt" data-opt="a" onclick="answer(this,'c','w4')">a) RequestParam només funciona amb POST</button>
+        <button class="opt" data-opt="b" onclick="answer(this,'c','w4')">b) PathVariable només funciona amb números</button>
+        <button class="opt" data-opt="c" onclick="answer(this,'c','w4')">c) RequestParam captura <code>?param=valor</code>, PathVariable captura fragments <code>/{valor}</code></button>
+        <button class="opt" data-opt="d" onclick="answer(this,'c','w4')">d) Són sinònims</button>
+      </div>
+      <div class="explain" id="exp_w4"><code>/quintuple?valor=5</code> → @RequestParam · <code>/quintuple/5</code> → @PathVariable.</div>
+    </div>
+
+    <div class="q">
+      <div class="q-text">5. Quan <code>btn.setEnabled(false)</code>:</div>
+      <div class="opts">
+        <button class="opt" data-opt="a" onclick="answer(this,'b','w5')">a) El botó desapareix</button>
+        <button class="opt" data-opt="b" onclick="answer(this,'b','w5')">b) El botó es veu però no és clicable (gris)</button>
+        <button class="opt" data-opt="c" onclick="answer(this,'b','w5')">c) El botó es torna invisible només per a alguns usuaris</button>
+        <button class="opt" data-opt="d" onclick="answer(this,'b','w5')">d) S'esborra el seu text</button>
+      </div>
+      <div class="explain" id="exp_w5">Desactivar (enabled=false) no oculta, només bloqueja la interacció. Per ocultar caldria <code>setVisible(false)</code>.</div>
+    </div>
+
+    <div class="q">
+      <div class="q-text">6. <code>model.addAttribute("resultat", n);</code> en un controlador Spring serveix per:</div>
+      <div class="opts">
+        <button class="opt" data-opt="a" onclick="answer(this,'c','w6')">a) Guardar a la base de dades</button>
+        <button class="opt" data-opt="b" onclick="answer(this,'c','w6')">b) Retornar JSON al client</button>
+        <button class="opt" data-opt="c" onclick="answer(this,'c','w6')">c) Passar dades a la vista (plantilla HTML)</button>
+        <button class="opt" data-opt="d" onclick="answer(this,'c','w6')">d) Modificar la URL</button>
+      </div>
+      <div class="explain" id="exp_w6">El Model és el "transportador" de dades entre el controlador i la plantilla (Thymeleaf, JSP...). A la plantilla apareixerà com a variable <code>${resultat}</code>.</div>
+    </div>
+
+    <div class="q">
+      <div class="q-text">7. <code>SpringApplication.run(...)</code> a Spring Boot:</div>
+      <div class="opts">
+        <button class="opt" data-opt="a" onclick="answer(this,'b','w7')">a) Compila el codi font</button>
+        <button class="opt" data-opt="b" onclick="answer(this,'b','w7')">b) Arrenca l'app + Tomcat embegut, sense necessitat d'instal·lar servidor</button>
+        <button class="opt" data-opt="c" onclick="answer(this,'b','w7')">c) Desplega l'aplicació a un servidor remot</button>
+        <button class="opt" data-opt="d" onclick="answer(this,'b','w7')">d) Fa una petició HTTP</button>
+      </div>
+      <div class="explain" id="exp_w7">Spring Boot porta Tomcat embegut. Per això no cal instal·lar res a part — l'aplicació és executable.</div>
+    </div>
+
+    <div class="q">
+      <div class="q-text">8. En <code>private JComboBox&lt;String&gt; comboPack;</code>, el <code>&lt;String&gt;</code> indica:</div>
+      <div class="opts">
+        <button class="opt" data-opt="a" onclick="answer(this,'b','w8')">a) El títol del combo</button>
+        <button class="opt" data-opt="b" onclick="answer(this,'b','w8')">b) El tipus dels elements que conté</button>
+        <button class="opt" data-opt="c" onclick="answer(this,'b','w8')">c) El número màxim d'elements</button>
+        <button class="opt" data-opt="d" onclick="answer(this,'b','w8')">d) El color del combo</button>
+      </div>
+      <div class="explain" id="exp_w8">És un generic Java. <code>JComboBox&lt;String&gt;</code> conté Strings. Si fos <code>JComboBox&lt;Integer&gt;</code>, contindria enters.</div>
+    </div>
+
+    <div class="q">
+      <div class="q-text">9. Què passa amb el següent codi si l'usuari introdueix "abc"?</div>
+      <pre><code><span class="kw">int</span> n = <span class="typ">Integer</span>.<span class="fn">parseInt</span>(camp.<span class="fn">getText</span>());</code></pre>
+      <div class="opts">
+        <button class="opt" data-opt="a" onclick="answer(this,'c','w9')">a) n val 0</button>
+        <button class="opt" data-opt="b" onclick="answer(this,'c','w9')">b) n val -1</button>
+        <button class="opt" data-opt="c" onclick="answer(this,'c','w9')">c) Llança NumberFormatException</button>
+        <button class="opt" data-opt="d" onclick="answer(this,'c','w9')">d) Es converteix "abc" a un nombre aleatori</button>
+      </div>
+      <div class="explain" id="exp_w9"><code>parseInt</code> llança <code>NumberFormatException</code> si la cadena no és parsejable. Per això sempre s'embolica amb un try/catch a les validacions de l'EAC2.</div>
+    </div>
+
+    <div class="q">
+      <div class="q-text">10. <code>EventQueue.invokeLater(...)</code> al <code>main()</code> serveix per:</div>
+      <div class="opts">
+        <button class="opt" data-opt="a" onclick="answer(this,'c','w10')">a) Programar una alarma</button>
+        <button class="opt" data-opt="b" onclick="answer(this,'c','w10')">b) Carregar plugins</button>
+        <button class="opt" data-opt="c" onclick="answer(this,'c','w10')">c) Executar codi al thread d'esdeveniments d'Swing (EDT)</button>
+        <button class="opt" data-opt="d" onclick="answer(this,'c','w10')">d) Connectar amb una base de dades</button>
+      </div>
+      <div class="explain" id="exp_w10">Swing no és thread-safe. Tots els canvis a la GUI han de fer-se a l'Event Dispatch Thread. <code>invokeLater</code> hi posa el codi en cua.</div>
+    </div>
+
+  </div>
+</section>
+
+<div id="tracker" class="tracker"></div>
+<script src="shared.js"></script>
+</body>
+</html>

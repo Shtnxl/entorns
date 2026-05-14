@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>02 · POO i teoria — Repàs PAF M0487</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header>
+  <h1>02 · POO i desenvolupament — teoria</h1>
+  <a class="back" href="index.html">← Índex</a>
+</header>
+
+<div class="tabs">
+  <button class="tab" onclick="showTab('poo', this)">Pilars POO</button>
+  <button class="tab" onclick="showTab('paradigmes', this)">Paradigmes</button>
+  <button class="tab" onclick="showTab('compilacio', this)">Compilació & JVM</button>
+  <button class="tab" onclick="showTab('generacions', this)">Generacions de llenguatges</button>
+  <button class="tab" onclick="showTab('modular', this)">Modularitat & estructurada</button>
+  <button class="tab" onclick="showTab('metrica', this)">Metodologies (Mètrica 3)</button>
+  <button class="tab" onclick="showTab('quiz', this)">Quiz</button>
+</div>
+
+<!-- =================== PILARS POO =================== -->
+<section id="poo" class="section">
+  <div class="hero">
+    <h2>Els 4 pilars de la POO</h2>
+    <p class="lead">Cau a cada PAF. Aprèn-los amb un exemple, no com a definicions.</p>
+  </div>
+
+  <div class="card good">
+    <div class="card-title">1️⃣ Encapsulació</div>
+    <p>Amagar les dades internes d'una classe darrere de mètodes públics (getters/setters).</p>
+    <pre><code><span class="kw">public class</span> <span class="typ">Cientific</span> {
+    <span class="kw">private</span> <span class="typ">String</span> dni;          <span class="com">// privat: ningú hi accedeix directament</span>
+
+    <span class="kw">public</span> <span class="typ">String</span> <span class="fn">getDni</span>() {   <span class="com">// accés controlat</span>
+        <span class="kw">return</span> dni;
+    }
+}</code></pre>
+    <p><strong>Per a què serveix?</strong> Si demà canvies el tipus de <code>dni</code> a <code>long</code>, només has de tocar la classe Cientific, no totes les classes que la fan servir.</p>
+  </div>
+
+  <div class="card good">
+    <div class="card-title">2️⃣ Herència</div>
+    <p>Una classe filla rep els atributs i mètodes de la pare.</p>
+    <pre><code><span class="kw">public class</span> <span class="typ">DirectorEstacio</span> <span class="kw">extends</span> <span class="typ">Cientific</span> {
+    <span class="kw">private double</span> pressupost;
+    <span class="com">// hereta dni, nom, especialitat... de Cientific</span>
+}</code></pre>
+    <p><strong>Patró:</strong> "<em>A és un B</em>" → herència. Director <em>és un</em> científic amb extres.</p>
+  </div>
+
+  <div class="card good">
+    <div class="card-title">3️⃣ Polimorfisme</div>
+    <p>El mateix mètode es comporta diferent segons el tipus real de l'objecte.</p>
+    <pre><code><span class="typ">Cientific</span> c = <span class="kw">new</span> <span class="typ">DirectorEstacio</span>();
+c.<span class="fn">treballar</span>();  <span class="com">// crida la versió de DirectorEstacio, no la de Cientific</span></code></pre>
+    <p><strong>Truc per recordar:</strong> "<em>poli-morf</em>" = "moltes formes". Mateixa interfície, diferents implementacions.</p>
+  </div>
+
+  <div class="card good">
+    <div class="card-title">4️⃣ Abstracció</div>
+    <p>Quedar-se només amb el que importa, ignorar els detalls irrellevants.</p>
+    <p>Una classe abstracta o una interfície defineix <strong>què</strong> s'ha de fer, però no <strong>com</strong>.</p>
+    <pre><code><span class="kw">public abstract class</span> <span class="typ">Equipament</span> {
+    <span class="kw">public abstract void</span> <span class="fn">arrencar</span>();  <span class="com">// què, no com</span>
+}</code></pre>
+  </div>
+
+  <h3>Sobrecàrrega vs sobreescriptura — TRAMPA CLÀSSICA</h3>
+  <table>
+    <tr><th></th><th>Sobrecàrrega (overloading)</th><th>Sobreescriptura (overriding)</th></tr>
+    <tr><td>Quan</td><td>Mateix nom, paràmetres diferents</td><td>Mateixa signatura a classe filla</td></tr>
+    <tr><td>Lloc</td><td>Mateixa classe (o herència)</td><td>Classe filla</td></tr>
+    <tr><td>Resolució</td><td>En temps de compilació</td><td>En temps d'execució</td></tr>
+    <tr><td>Relació amb herència</td><td>No requereix</td><td>Sí, requereix</td></tr>
+  </table>
+
+  <div class="card warn">
+    <div class="card-title">⚠️ Exemple PAF</div>
+    <p>Si una classe <code>Campanya</code> té <code>activar()</code> i la filla <code>CampanyaRRSS</code> el redefineix <strong>exactament igual</strong> (mateixa signatura), és <strong>sobreescriptura</strong>.</p>
+    <p>Si hi hagués <code>activar(int data)</code> a la mateixa classe, seria <strong>sobrecàrrega</strong>.</p>
+  </div>
+</section>
+
+<!-- =================== PARADIGMES =================== -->
+<section id="paradigmes" class="section">
+  <h2>Paradigmes de programació</h2>
+
+  <table>
+    <tr><th>Paradigma</th><th>Idea</th><th>Llenguatges</th><th>Exemple mental</th></tr>
+    <tr>
+      <td><strong>Imperatiu</strong></td>
+      <td>Seqüència d'instruccions que modifiquen l'estat</td>
+      <td>C, Pascal</td>
+      <td>Una recepta de cuina: pas 1, pas 2, pas 3...</td>
+    </tr>
+    <tr>
+      <td><strong>Orientat a objectes</strong></td>
+      <td>Objectes amb estat i comportament</td>
+      <td>Java, C++, Python</td>
+      <td>Una empresa amb empleats que fan tasques</td>
+    </tr>
+    <tr>
+      <td><strong>Funcional</strong></td>
+      <td>Funcions sense efectes secundaris</td>
+      <td>Haskell, Lisp, parts de JS</td>
+      <td>Una calculadora: f(x) sempre dóna el mateix resultat</td>
+    </tr>
+    <tr>
+      <td><strong>Lògic</strong></td>
+      <td>Regles i deduccions</td>
+      <td>Prolog</td>
+      <td>Un detectiu deduint a partir de fets</td>
+    </tr>
+    <tr>
+      <td><strong>Declaratiu</strong></td>
+      <td>Dius <em>què</em> vols, no <em>com</em></td>
+      <td>SQL, HTML</td>
+      <td>"Vull tots els clients de Barcelona", no et preocupes del com</td>
+    </tr>
+  </table>
+
+  <div class="card info">
+    <div class="card-title">💡 La pregunta tipus PAF</div>
+    <p>"Quin paradigma es basa en l'aplicació de regles lògiques per deduir conclusions?" → <strong>Lògic</strong>.</p>
+    <p>"Quin paradigma utilitza funcions matemàtiques pures?" → <strong>Funcional</strong>.</p>
+  </div>
+</section>
+
+<!-- =================== COMPILACIÓ =================== -->
+<section id="compilacio" class="section">
+  <h2>Compilació, interpretació i JVM</h2>
+
+  <h3>El procés: codi font → execució</h3>
+  <pre><code>codi font (.java)
+       │
+       │ <span class="fn">javac</span> = COMPILACIÓ
+       ▼
+bytecode (.class)
+       │
+       │ JVM = INTERPRETACIÓ / JIT
+       ▼
+codi màquina (s'executa)</code></pre>
+
+  <h3>Diferències clau</h3>
+  <table>
+    <tr><th>Procés</th><th>Què fa</th><th>Eina</th></tr>
+    <tr>
+      <td><strong>Compilació</strong></td>
+      <td>Tradueix codi font a un format que la màquina o la VM entén</td>
+      <td>Compilador (javac, gcc)</td>
+    </tr>
+    <tr>
+      <td><strong>Enllaçament (linking)</strong></td>
+      <td>Combina diversos mòduls compilats + biblioteques en un executable</td>
+      <td>Enllaçador (linker)</td>
+    </tr>
+    <tr>
+      <td><strong>Interpretació</strong></td>
+      <td>Llegeix codi font o bytecode i l'executa <strong>línia a línia</strong></td>
+      <td>Intèrpret (JVM, Python)</td>
+    </tr>
+    <tr>
+      <td><strong>Execució</strong></td>
+      <td>El processador (real o virtual) corre les instruccions</td>
+      <td>CPU o VM</td>
+    </tr>
+  </table>
+
+  <div class="card good">
+    <div class="card-title">JVM (Java Virtual Machine)</div>
+    <p>El gran avantatge de Java: <strong>"Write Once, Run Anywhere"</strong>.</p>
+    <ul>
+      <li>Compiles una vegada a <strong>bytecode</strong> (.class).</li>
+      <li>El bytecode el pot executar qualsevol JVM (Windows, Mac, Linux...).</li>
+      <li><strong>Portabilitat</strong> = no has de recompilar per a cada SO.</li>
+    </ul>
+  </div>
+
+  <div class="card warn">
+    <div class="card-title">⚠️ Trampa de la PAF</div>
+    <p>"La JVM permet principalment..." NO és "executar més ràpid que codi natiu" (això és fals — el codi natiu sempre és més ràpid). La resposta és la <strong>portabilitat</strong>.</p>
+  </div>
+
+  <h3>Biblioteca vs framework</h3>
+  <table>
+    <tr><th></th><th>Biblioteca</th><th>Framework</th></tr>
+    <tr><td>Qui crida a qui</td><td>Tu crides la biblioteca</td><td>El framework et crida a tu ("inversió de control")</td></tr>
+    <tr><td>Exemple</td><td><code>Math.sqrt()</code></td><td>Spring Boot (gestiona el cicle de vida sencer)</td></tr>
+  </table>
+</section>
+
+<!-- =================== GENERACIONS =================== -->
+<section id="generacions" class="section">
+  <h2>Generacions de llenguatges de programació</h2>
+
+  <table>
+    <tr><th>Gen.</th><th>Tipus</th><th>Exemple</th><th>Característica</th></tr>
+    <tr>
+      <td><strong>1G</strong></td>
+      <td>Codi màquina</td>
+      <td>Binari (0/1)</td>
+      <td>Directe per al processador, illegible per humans</td>
+    </tr>
+    <tr>
+      <td><strong>2G</strong></td>
+      <td>Codi simbòlic</td>
+      <td>Assemblador</td>
+      <td><strong>Mnemotècnics</strong> (MOV, ADD, JMP). 1:1 amb codi màquina</td>
+    </tr>
+    <tr>
+      <td><strong>3G</strong></td>
+      <td>Alt nivell</td>
+      <td>C, Java, Python</td>
+      <td>Estructures de control, abstracció</td>
+    </tr>
+    <tr>
+      <td><strong>4G</strong></td>
+      <td>Específic de domini</td>
+      <td>SQL, R, MATLAB</td>
+      <td><strong>Declaratiu</strong>, orientat a un problema concret</td>
+    </tr>
+    <tr>
+      <td><strong>5G</strong></td>
+      <td>Lògic / IA</td>
+      <td>Prolog</td>
+      <td>Dius <em>què</em> vols, el sistema dedueix <em>com</em></td>
+    </tr>
+  </table>
+
+  <div class="card info">
+    <div class="card-title">💡 Truc per recordar</div>
+    <p>Com més gran la generació, més <strong>abstracta</strong> i menys properament a la màquina.</p>
+    <p>"<strong>Mnemotècnic</strong>" sempre és <strong>2a generació</strong> (assemblador).</p>
+  </div>
+</section>
+
+<!-- =================== MODULARITAT =================== -->
+<section id="modular" class="section">
+  <h2>Modularitat i programació estructurada</h2>
+
+  <h3>Modularitat</h3>
+  <p>Dividir un programa en parts <strong>independents i funcionalment tancades</strong>.</p>
+
+  <div class="card good">
+    <div class="card-title">Avantatges</div>
+    <ul>
+      <li><strong>Reutilització:</strong> el mateix mòdul serveix per a múltiples projectes</li>
+      <li><strong>Manteniment:</strong> arreglar un bug només afecta un mòdul</li>
+      <li><strong>Treball en equip:</strong> cada persona pot tocar el seu mòdul</li>
+      <li><strong>Testing:</strong> es proven mòduls per separat</li>
+    </ul>
+  </div>
+
+  <h3>Teorema de l'estructura (Böhm-Jacopini)</h3>
+  <p>Qualsevol algorisme es pot construir amb només <strong>3 estructures de control</strong>:</p>
+  <ol>
+    <li><strong>Seqüència</strong> — una instrucció després d'una altra</li>
+    <li><strong>Selecció</strong> — <code>if / else / switch</code></li>
+    <li><strong>Iteració</strong> — <code>while / for / do-while</code></li>
+  </ol>
+
+  <div class="card bad">
+    <div class="card-title">❌ El que NO entra al teorema</div>
+    <p><strong>GOTO</strong> (salts incondicionals). La programació estructurada va sorgir precisament per <strong>eliminar</strong> els GOTOs, perquè feien el codi inseguible ("codi espagueti").</p>
+  </div>
+
+  <h3>Conceptes relacionats</h3>
+  <table>
+    <tr><th>Concepte</th><th>Significat</th></tr>
+    <tr><td><strong>Cohesió</strong></td><td>Com de relacionades estan les responsabilitats dins un mòdul. <strong>Alta cohesió = bo</strong>.</td></tr>
+    <tr><td><strong>Acoblament</strong></td><td>Com de dependents són els mòduls entre si. <strong>Baix acoblament = bo</strong>.</td></tr>
+    <tr><td><strong>Jerarquia</strong></td><td>Organització en nivells (mòduls que en contenen d'altres).</td></tr>
+  </table>
+</section>
+
+<!-- =================== METRICA 3 =================== -->
+<section id="metrica" class="section">
+  <h2>Metodologies de desenvolupament — Mètrica 3</h2>
+
+  <p>Metodologia espanyola per al desenvolupament de sistemes d'informació. Les seves <strong>4 fases</strong> cauen a la PAF:</p>
+
+  <div class="card info">
+    <div class="card-title">1. Estudi de viabilitat (EVS)</div>
+    <p>"Val la pena fer aquest projecte?" Anàlisi de cost-benefici, possibilitats tècniques.</p>
+  </div>
+
+  <div class="card info">
+    <div class="card-title">2. Anàlisi del sistema d'informació (ASI)</div>
+    <p>"Què ha de fer el sistema?" Recull de requisits, casos d'ús, model conceptual.</p>
+    <p><strong>Aquí es fa l'especificació detallada de QUÈ.</strong></p>
+  </div>
+
+  <div class="card good">
+    <div class="card-title">3. Disseny del sistema d'informació (DSI)</div>
+    <p>"Com ho farem?" Arquitectura, disseny de classes, base de dades, interfícies.</p>
+    <p><strong>Aquí es fa l'especificació detallada de COM.</strong></p>
+  </div>
+
+  <div class="card info">
+    <div class="card-title">4. Construcció i implantació (CSI / IAS)</div>
+    <p>Codificació, proves, posada en producció.</p>
+  </div>
+
+  <div class="card info">
+    <div class="card-title">5. Manteniment dels sistemes d'informació (MSI)</div>
+    <p>Correctiu, evolutiu, adaptatiu, perfectiu.</p>
+  </div>
+
+  <div class="card warn">
+    <div class="card-title">⚠️ Trampa clàssica</div>
+    <p><strong>"En quina fase es realitza l'especificació detallada del sistema?"</strong></p>
+    <p>Tothom contesta "Anàlisi" perquè sona lògic. Però la resposta correcta segons l'EAC2 és <strong>"Disseny del sistema d'informació"</strong> — l'anàlisi diu QUÈ ha de fer, el disseny detalla COM.</p>
+    <p>Atenció: hi ha PAFs on s'accepta "Anàlisi" si la pregunta s'enfoca cap als requisits. Llegeix bé l'enunciat.</p>
+  </div>
+
+  <h3>Altres metodologies que poden caure</h3>
+  <table>
+    <tr><th>Metodologia</th><th>Característica</th></tr>
+    <tr><td>Cascada</td><td>Fases seqüencials, no es torna enrere</td></tr>
+    <tr><td>Iterativa</td><td>Cicles repetits amb millores</td></tr>
+    <tr><td>Espiral</td><td>Anàlisi de riscos en cada cicle</td></tr>
+    <tr><td>Àgil (Scrum, XP)</td><td>Sprints curts, feedback continu</td></tr>
+  </table>
+</section>
+
+<!-- =================== QUIZ =================== -->
+<section id="quiz" class="section">
+  <h2>Quiz — POO i teoria (12 preguntes)</h2>
+  <p style="color:var(--text-dim);font-size:0.9rem;">Quiz d'autoavaluació (no compta a la puntuació PAF).</p>
+
+  <div class="quiz">
+
+    <div class="q">
+      <div class="q-text">1. Quin pilar de la POO permet que una classe filla rebi atributs i mètodes de la pare?</div>
+      <div class="opts">
+        <button class="opt" data-opt="a" onclick="answer(this,'c','t1')">a) Encapsulació</button>
+        <button class="opt" data-opt="b" onclick="answer(this,'c','t1')">b) Abstracció</button>
+        <button class="opt" data-opt="c" onclick="answer(this,'c','t1')">c) Herència</button>
+        <button class="opt" data-opt="d" onclick="answer(this,'c','t1')">d) Polimorfisme</button>
+      </div>
+      <div class="explain" id="exp_t1">Herència = "és un". Una classe filla hereta tot el que té la pare. Polimorfisme és una conseqüència útil de l'herència, però el mecanisme bàsic és l'herència.</div>
+    </div>
+
+    <div class="q">
+      <div class="q-text">2. Si <code>Campanya</code> té el mètode <code>activar()</code> i <code>CampanyaRRSS</code> el redefineix amb la mateixa signatura, és:</div>
+      <div class="opts">
+        <button class="opt" data-opt="a" onclick="answer(this,'b','t2')">a) Sobrecàrrega</button>
+        <button class="opt" data-opt="b" onclick="answer(this,'b','t2')">b) Sobreescriptura</button>
+        <button class="opt" data-opt="c" onclick="answer(this,'b','t2')">c) Encapsulació</button>
+        <button class="opt" data-opt="d" onclick="answer(this,'b','t2')">d) Una interfície</button>
+      </div>
+      <div class="explain" id="exp_t2">Sobreescriptura: mateixa signatura, classe filla redefineix el comportament. Sobrecàrrega seria a la mateixa classe amb paràmetres diferents.</div>
+    </div>
+
+    <div class="q">
+      <div class="q-text">3. El procés de traducció del codi font a un format que el processador entén (directament o via VM) s'anomena:</div>
+      <div class="opts">
+        <button class="opt" data-opt="a" onclick="answer(this,'b','t3')">a) Enllaçament</button>
+        <button class="opt" data-opt="b" onclick="answer(this,'b','t3')">b) Compilació</button>
+        <button class="opt" data-opt="c" onclick="answer(this,'b','t3')">c) Execució</button>
+        <button class="opt" data-opt="d" onclick="answer(this,'b','t3')">d) Interpretació</button>
+      </div>
+      <div class="explain" id="exp_t3">Compilació = traducció. L'enllaçament és el pas posterior que junta mòduls. Execució és córrer el codi ja traduït.</div>
+    </div>
+
+    <div class="q">
+      <div class="q-text">4. La JVM permet principalment:</div>
+      <div class="opts">
+        <button class="opt" data-opt="a" onclick="answer(this,'d','t4')">a) Executar codi més ràpid que el natiu</button>
+        <button class="opt" data-opt="b" onclick="answer(this,'d','t4')">b) Escriure codi directament en binari</button>
+        <button class="opt" data-opt="c" onclick="answer(this,'d','t4')">c) Generar GUI automàticament</button>
+        <button class="opt" data-opt="d" onclick="answer(this,'d','t4')">d) Portabilitat entre diferents plataformes</button>
+      </div>
+      <div class="explain" id="exp_t4">"Write once, run anywhere". El bytecode compila una vegada i corre a qualsevol SO amb JVM.</div>
+    </div>
+
+    <div class="q">
+      <div class="q-text">5. Un llenguatge que usa codis mnemotècnics (MOV, ADD, JMP) és de:</div>
+      <div class="opts">
+        <button class="opt" data-opt="a" onclick="answer(this,'b','t5')">a) Primera generació</button>
+        <button class="opt" data-opt="b" onclick="answer(this,'b','t5')">b) Segona generació</button>
+        <button class="opt" data-opt="c" onclick="answer(this,'b','t5')">c) Quarta generació</button>
+        <button class="opt" data-opt="d" onclick="answer(this,'b','t5')">d) Cinquena generació</button>
+      </div>
+      <div class="explain" id="exp_t5">Assemblador = 2G. La 1G és el binari pur. SQL és 4G, Prolog és 5G.</div>
+    </div>
+
+    <div class="q">
+      <div class="q-text">6. Dividir un programa en parts independents i tancades funcionalment es coneix com:</div>
+      <div class="opts">
+        <button class="opt" data-opt="a" onclick="answer(this,'a','t6')">a) Modularitat</button>
+        <button class="opt" data-opt="b" onclick="answer(this,'a','t6')">b) Jerarquia</button>
+        <button class="opt" data-opt="c" onclick="answer(this,'a','t6')">c) Compilació</button>
+        <button class="opt" data-opt="d" onclick="answer(this,'a','t6')">d) Interpretació</button>
+      </div>
+      <div class="explain" id="exp_t6">Modularitat. Jerarquia és l'organització en nivells però no l'acte de dividir.</div>
+    </div>
+
+    <div class="q">
+      <div class="q-text">7. Quin paradigma es basa en regles lògiques per deduir conclusions?</div>
+      <div class="opts">
+        <button class="opt" data-opt="a" onclick="answer(this,'c','t7')">a) Imperatiu</button>
+        <button class="opt" data-opt="b" onclick="answer(this,'c','t7')">b) Funcional</button>
+        <button class="opt" data-opt="c" onclick="answer(this,'c','t7')">c) Lògic</button>
+        <button class="opt" data-opt="d" onclick="answer(this,'c','t7')">d) Orientat a objectes</button>
+      </div>
+      <div class="explain" id="exp_t7">El paradigma lògic (Prolog) parteix de fets i regles, dedueix conclusions. El funcional es basa en funcions matemàtiques pures.</div>
+    </div>
+
+    <div class="q">
+      <div class="q-text">8. A Mètrica 3, l'especificació detallada del sistema es realitza a:</div>
+      <div class="opts">
+        <button class="opt" data-opt="a" onclick="answer(this,'a','t8')">a) Disseny del sistema d'informació</button>
+        <button class="opt" data-opt="b" onclick="answer(this,'a','t8')">b) Manteniment</button>
+        <button class="opt" data-opt="c" onclick="answer(this,'a','t8')">c) Estudi de viabilitat</button>
+        <button class="opt" data-opt="d" onclick="answer(this,'a','t8')">d) Anàlisi del sistema</button>
+      </div>
+      <div class="explain" id="exp_t8">Aquesta és la resposta segons la solució oficial de l'EAC2. Anàlisi = QUÈ ha de fer. Disseny = COM es farà (especificació detallada). Atenció: és una pregunta amb matís — llegeix l'enunciat de la PAF amb cura.</div>
+    </div>
+
+    <div class="q">
+      <div class="q-text">9. Quin element NO forma part de la programació estructurada segons el teorema de l'estructura?</div>
+      <div class="opts">
+        <button class="opt" data-opt="a" onclick="answer(this,'d','t9')">a) Seqüència</button>
+        <button class="opt" data-opt="b" onclick="answer(this,'d','t9')">b) Selecció</button>
+        <button class="opt" data-opt="c" onclick="answer(this,'d','t9')">c) Iteració</button>
+        <button class="opt" data-opt="d" onclick="answer(this,'d','t9')">d) GOTO (salts incondicionals)</button>
+      </div>
+      <div class="explain" id="exp_t9">Böhm-Jacopini: qualsevol algorisme es pot fer amb seqüència, selecció i iteració. El GOTO és justament el que la prog. estructurada va eliminar.</div>
+    </div>
+
+    <div class="q">
+      <div class="q-text">10. Conjunt de codi predefinit que facilita la tasca de codificació:</div>
+      <div class="opts">
+        <button class="opt" data-opt="a" onclick="answer(this,'c','t10')">a) Enllaçador</button>
+        <button class="opt" data-opt="b" onclick="answer(this,'c','t10')">b) Compilador</button>
+        <button class="opt" data-opt="c" onclick="answer(this,'c','t10')">c) Biblioteca</button>
+        <button class="opt" data-opt="d" onclick="answer(this,'c','t10')">d) Intèrpret</button>
+      </div>
+      <div class="explain" id="exp_t10">Biblioteca = codi reusable. Si fos un framework, el codi et cridaria a tu en lloc de tu cridar-lo a ell.</div>
+    </div>
+
+    <div class="q">
+      <div class="q-text">11. L'encapsulació serveix principalment per:</div>
+      <div class="opts">
+        <button class="opt" data-opt="a" onclick="answer(this,'c','t11')">a) Permetre l'herència múltiple</button>
+        <button class="opt" data-opt="b" onclick="answer(this,'c','t11')">b) Compilar més ràpid</button>
+        <button class="opt" data-opt="c" onclick="answer(this,'c','t11')">c) Amagar els detalls interns i controlar l'accés a les dades</button>
+        <button class="opt" data-opt="d" onclick="answer(this,'c','t11')">d) Sobrecarregar mètodes</button>
+      </div>
+      <div class="explain" id="exp_t11">Encapsulació = ocultació + accés controlat. Si demà canvies com s'emmagatzemen les dades, només toques la classe.</div>
+    </div>
+
+    <div class="q">
+      <div class="q-text">12. La diferència principal entre sobrecàrrega i sobreescriptura és:</div>
+      <div class="opts">
+        <button class="opt" data-opt="a" onclick="answer(this,'b','t12')">a) Sobrecàrrega requereix herència, sobreescriptura no</button>
+        <button class="opt" data-opt="b" onclick="answer(this,'b','t12')">b) Sobrecàrrega usa paràmetres diferents, sobreescriptura manté la signatura</button>
+        <button class="opt" data-opt="c" onclick="answer(this,'b','t12')">c) Sobreescriptura es resol en compilació, sobrecàrrega en execució</button>
+        <button class="opt" data-opt="d" onclick="answer(this,'b','t12')">d) Sobrecàrrega només existeix amb interfícies</button>
+      </div>
+      <div class="explain" id="exp_t12">Sobrecàrrega = mateix nom, diferent llista de paràmetres (mateixa classe). Sobreescriptura = mateixa signatura, classe filla redefineix. L'opció c és al revés: sobrecàrrega és en compilació, sobreescriptura en execució.</div>
+    </div>
+
+  </div>
+</section>
+
+<div id="tracker" class="tracker"></div>
+<script src="shared.js"></script>
+</body>
+</html>

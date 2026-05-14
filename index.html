@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Repàs PAF — M0487 Entorns de Desenvolupament</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header>
+  <h1>📚 Repàs PAF — M0487</h1>
+  <span style="color:var(--text-dim);font-size:0.85rem;">Entorns de Desenvolupament · DAM/DAW</span>
+</header>
+
+<div class="hero">
+  <h2 style="margin-top:0;">Estructura de la PAF</h2>
+  <p class="lead">La prova té 3 blocs:</p>
+  <ul style="margin-top:8px;">
+    <li><strong>Disseny OO</strong> — 2 exercicis de diagrama UML</li>
+    <li><strong>Desenvolupament de programari</strong> — 10 preguntes test (teoria + interpretació de codi Spring/WindowBuilder)</li>
+    <li><strong>Optimització del programari</strong> — 2 exercicis pràctics (refacció + proves) + 1 test (JUnit + Git)</li>
+  </ul>
+  <p style="margin-top:12px;color:var(--warn);"><strong>📝 Examen en paper</strong> — no cal escriure codi de WindowBuilder/Spring/JUnit/Git, només saber-lo interpretar.</p>
+  <p style="margin-top:8px;color:var(--text-dim);font-size:0.85rem;">Puntuació test: <strong>+0,5</strong> per encert · <strong>−0,125</strong> per fallada · <strong>0</strong> en blanc.</p>
+</div>
+
+<div class="grid">
+
+  <a class="tile" href="01_uml.html">
+    <div class="num">01</div>
+    <h3>Diagrames UML</h3>
+    <p>Classes (cardinalitat, herència, agregació vs composició, classe-associació) + comportament (casos d'ús, seqüència, comunicació, activitats, estats).</p>
+    <span class="badge">2 exercicis a la PAF</span>
+  </a>
+
+  <a class="tile" href="02_poo_teoria.html">
+    <div class="num">02</div>
+    <h3>POO i desenvolupament — teoria</h3>
+    <p>Pilars POO, paradigmes, compilació vs interpretació, generacions de llenguatges, sobrecàrrega vs sobreescriptura, Mètrica 3.</p>
+    <span class="badge">Part del test (10 preg.)</span>
+  </a>
+
+  <a class="tile" href="03_windowbuilder_spring.html">
+    <div class="num">03</div>
+    <h3>Interpretació de codi: WindowBuilder + Spring</h3>
+    <p>Llegir Swing i Spring Boot: <code>@Controller</code>, <code>@GetMapping</code>, listeners, <code>setEnabled</code>, <code>JComboBox</code>. <strong>No</strong> cal escriure'l, només interpretar-lo.</p>
+    <span class="badge">Part del test (10 preg.)</span>
+  </a>
+
+  <a class="tile" href="04_refaccio.html">
+    <div class="num">04</div>
+    <h3>Refacció</h3>
+    <p>Extreure mètode, extreure constant, reanomenar, moure. Eliminar codi duplicat i números màgics.</p>
+    <span class="badge">Exercici pràctic</span>
+  </a>
+
+  <a class="tile" href="05_proves.html">
+    <div class="num">05</div>
+    <h3>Proves de programari</h3>
+    <p>Classes d'equivalència, valors límit, capsa blanca vs negra, complexitat ciclomàtica, diagrames de flux, camins independents.</p>
+    <span class="badge">Exercici pràctic</span>
+  </a>
+
+  <a class="tile" href="06_junit_git.html">
+    <div class="num">06</div>
+    <h3>JUnit + Git — interpretació</h3>
+    <p>Anotacions <code>@Test</code>, <code>assertEquals</code>, <code>assertThrows</code>. Ordres Git: <code>add</code>, <code>commit</code>, <code>branch</code>, <code>merge</code>, conflictes.</p>
+    <span class="badge">Test final</span>
+  </a>
+
+  <a class="tile" href="07_simulacre.html" style="border-color:var(--accent);">
+    <div class="num">07</div>
+    <h3>🎯 Simulacre PAF</h3>
+    <p>2 simulacres tipus PAF (8 preguntes cadascun) + repàs aleatori de 20 preguntes amb la fórmula real de l'IOC.</p>
+    <span class="badge" style="background:var(--accent);">Quan estiguis preparat</span>
+  </a>
+
+</div>
+
+<div style="margin-top:30px;padding:14px;background:var(--bg-card);border-radius:8px;border:1px solid var(--border);">
+  <strong style="color:var(--accent);">💡 Estratègia de repàs (1-2 setmanes):</strong>
+  <ol style="margin-top:8px;">
+    <li><strong>Dies 1-2:</strong> UML (és el que més punts dóna a la PAF — 2 exercicis sencers).</li>
+    <li><strong>Dies 3-4:</strong> POO teoria + interpretació codi (10 preguntes test).</li>
+    <li><strong>Dies 5-6:</strong> Refacció + proves (els 2 pràctics).</li>
+    <li><strong>Dia 7:</strong> JUnit + Git (test curt).</li>
+    <li><strong>Últims dies:</strong> Simulacres + repassar els EAC entregats.</li>
+  </ol>
+</div>
+
+<div id="tracker" class="tracker"></div>
+<script src="shared.js"></script>
+</body>
+</html>
